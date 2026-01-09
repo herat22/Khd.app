@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Khademe Gold - Luxury Accounting</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    
+    <style>
+        :root {
+            --bg-color: #050505;
+            --card-bg: rgba(30, 30, 30, 0.75);
+            --text-color: #f0f0f0;
+            --gold: #D4AF37;
+            --gold-light: #F4D03F;
+            --gold-gradient: linear-gradient(135deg, #D4AF37 0%, #F1C40F 50%, #AA8A26 100%);
+            --gold-text-gradient: linear-gradient(to bottom, #F4D03F, #D4AF37);
+            --danger: #ff4d4d;
+            --success: #00e676;
+            --input-bg: rgba(255, 255, 255, 0.08);
+            --border-radius: 20px;
+            --glass-border: 1px solid rgba(212, 175, 55, 0.3);
+            --shadow-gold: 0 8px 32px 0 rgba(212, 175, 55, 0.15);
+        }
+
+        * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            background-color: var(--bg-color);
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(212, 175, 55, 0.05) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(212, 175, 55, 0.05) 0%, transparent 40%);
+            color: var(--text-color);
+            font-family: 'Vazirmatn', sans-serif;
+            margin: 0; padding: 0; padding-bottom: 110px;
+            overflow-x: hidden; min-height: 100vh;
+        }
+
+        /* Scrollbar Hiding for Cards */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        .gold-text { 
+            background: var(--gold-text-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: bold;
+        }
+        
+        .shine-effect { position: relative; overflow: hidden; }
+        .shine-effect::after {
+            content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
+            background: linear-gradient(to right, transparent, rgba(255,255,255,0.2), transparent);
+            transform: skewX(-25deg); animation: shine 3s infinite;
+        }
+        @keyframes shine { 100% { left: 150%; } }
+
+        header {
+            background: rgba(5, 5, 5, 0.95);
+            padding: 15px 25px;
+            display: flex; justify-content: space-between; align-items: center;
+            position: sticky; top: 0; z-index: 100;
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .app-logo {
+            font-size: 1.4rem; letter-spacing: 1px; color: var(--gold);
+            font-weight: 900; font-family: 'Playfair Display', serif;
+        }
+
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(15px);
+            border-radius: var(--border-radius);
+            padding: 20px; margin: 15px;
+            border: var(--glass-border);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            position: relative;
+        }
+
+        /* Currency Cards Style */
+        .currency-card {
+            display: inline-block;
+            width: 150px;
+            height: 100px;
+            margin-left: 10px;
+            vertical-align: top;
+            padding: 15px;
+            background: linear-gradient(160deg, #1a1a1a, #000);
+        }
+
+        .balance-amount {
+            font-size: 2.2rem; margin: 10px 0;
+            background: var(--gold-text-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            direction: ltr; font-weight: 700; font-family: 'Playfair Display', serif;
+        }
+
+        .list-item {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 15px 0; border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .list-item:last-child { border-bottom: none; }
+
+        .avatar {
+            width: 50px; height: 50px; border-radius: 16px;
+            background: #111;
+            display: flex; align-items: center; justify-content: center;
+            color: var(--gold); border: 1px solid rgba(212, 175, 55, 0.3);
+            margin-inline-end: 12px; font-size: 1.2rem; flex-shrink: 0;
+        }
+
+        label { display: block; margin-bottom: 8px; color: #888; font-size: 0.8rem; margin-top: 15px; }
+
+        input, select, textarea {
+            width: 100%; background-color: var(--input-bg);
+            border: 1px solid #333; color: #fff;
+            padding: 16px; border-radius: 14px;
+            font-family: inherit; font-size: 1rem; transition: 0.3s;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--gold); 
+            background-color: rgba(255,255,255,0.1);
+        }
+
+        .btn {
+            width: 100%; padding: 16px; border: none; border-radius: 14px;
+            font-weight: bold; font-size: 1rem; cursor: pointer;
+            background: var(--gold-gradient);
+            color: #000; margin-top: 20px; font-family: inherit;
+            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.2);
+            transition: 0.2s;
+        }
+        .btn:active { transform: scale(0.98); }
+
+        .btn-outline {
+            background: transparent; border: 1px solid var(--gold);
+            color: var(--gold); box-shadow: none; margin-top: 0;
+        }
+
+        .bottom-nav {
+            position: fixed; bottom: 20px; left: 20px; right: 20px;
+            background: rgba(20, 20, 20, 0.95);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 25px;
+            display: flex; justify-content: space-around;
+            padding: 15px 0; z-index: 1000;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+        }
+
+        .nav-item { color: #666; font-size: 1.4rem; cursor: pointer; transition: 0.3s; position: relative; }
+        .nav-item.active { color: var(--gold); transform: translateY(-3px); }
+        
+        .add-btn-wrapper { position: relative; top: -40px; }
+        .nav-item.add-btn {
+            background: var(--gold-gradient);
+            color: #000; width: 65px; height: 65px;
+            border-radius: 20px; display: flex;
+            align-items: center; justify-content: center;
+            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.4);
+            font-size: 1.6rem; border: 4px solid #000;
+        }
+
+        .page { display: none; padding-top: 10px; animation: fadeIn 0.3s ease; }
+        .page.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9); z-index: 2000;
+            display: none; align-items: center; justify-content: center;
+            padding: 20px; backdrop-filter: blur(5px);
+        }
+        .modal-content {
+            background: #151515; border: 1px solid var(--gold);
+            width: 100%; max-width: 400px; border-radius: 24px;
+            padding: 25px; position: relative;
+        }
+
+        /* Flex Utilities */
+        .flex-row { display: flex; align-items: center; }
+        .gap-10 { gap: 10px; }
+        
+        @media print { .no-print { display: none !important; } }
+    </style>
+</head>
+<body>
+
+    <div id="toast-container" style="position:fixed; top:20px; left:50%; transform:translateX(-50%); z-index:5000;"></div>
+
+    <div id="login-screen" style="position:fixed; top:0; left:0; right:0; bottom:0; background:#000; z-index:3000; display:flex; flex-direction:column; justify-content:center; text-align:center; padding:30px;">
+        <div class="app-logo" style="font-size: 3.5rem; margin-bottom: 5px;">KHADEME</div>
+        <div style="color: var(--gold); font-size: 0.9rem; margin-bottom: 60px; letter-spacing: 4px; text-transform:uppercase;">Luxury Finance</div>
+        
+        <input type="password" id="login-pin" placeholder="PIN" style="text-align: center; letter-spacing: 15px; font-size: 1.5rem; background:transparent; border:none; border-bottom:1px solid var(--gold); border-radius:0; max-width:180px; margin:0 auto;" maxlength="6">
+        <button class="btn shine-effect" onclick="checkLogin()" style="margin-top:40px; max-width:200px; margin-left:auto; margin-right:auto;">ENTER</button>
+        <p id="pin-error" style="color: var(--danger); display: none; margin-top:20px; font-size:0.9rem;">رمز اشتباه است</p>
+    </div>
+
+    <header>
+        <div class="app-logo">KHADEME</div>
+        <div class="flex-row gap-10">
+            <div id="online-status" style="width: 10px; height: 10px; background: #333; border-radius: 50%;"></div>
+        </div>
+    </header>
+
+    <div id="home-page" class="page active">
+        <div style="overflow-x: auto; white-space: nowrap; padding-bottom: 10px; padding-left: 15px; padding-right: 15px;" class="no-scrollbar">
+            <div id="currency-cards-container"></div>
+        </div>
+
+        <div class="card" style="margin-top: 5px;">
+            <div class="flex-row" style="justify-content: space-between; margin-bottom: 10px;">
+                <h3 class="gold-text" style="font-size: 1rem; margin:0;">روند مالی (۷ روز)</h3>
+            </div>
+            <div style="height: 200px; width: 100%;">
+                <canvas id="financeChart"></canvas>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="flex-row" style="justify-content: space-between; margin-bottom: 20px;">
+                <h3 class="gold-text" style="font-size: 1.1rem; margin: 0;">تراکنش‌ها</h3>
+                <span style="font-size: 0.8rem; color: #666;" onclick="switchPage('reports-page', null)">همه</span>
+            </div>
+            <div id="recent-transactions-list"></div>
+        </div>
+    </div>
+
+    <div id="customers-page" class="page">
+        <div style="padding: 15px 20px;">
+            <div class="flex-row gap-10">
+                <input type="text" id="search-customer" onkeyup="renderCustomers()" style="margin-bottom: 0; border-radius: 50px; padding-right: 20px;" placeholder="جستجوی مشتری...">
+                <button class="btn shine-effect" style="width: auto; margin-top: 0; border-radius: 50%; width: 50px; height: 50px; padding:0; flex-shrink:0;" onclick="openCustomerModal()">
+                    <i class="fa fa-plus"></i>
+                </button>
+            </div>
+        </div>
+        <div id="customers-list" style="padding-bottom: 100px;"></div>
+    </div>
+
+    <div id="add-page" class="page">
+        <div class="card">
+            <h2 class="gold-text text-center" style="margin-bottom: 25px;" id="add-page-title">تراکنش جدید</h2>
+            <input type="hidden" id="edit-tx-id">
+            
+            <div style="background: rgba(255,255,255,0.05); padding: 5px; border-radius: 15px; display: flex; margin-bottom: 20px;">
+                <button class="btn" style="flex:1; margin:0; background: transparent; color:#666; box-shadow: none;" id="btn-type-avard" onclick="setTxType('avard')">
+                    <i class="fa fa-arrow-down"></i> دریافت
+                </button>
+                <button class="btn" style="flex:1; margin:0; background: transparent; color:#666; box-shadow: none;" id="btn-type-bord" onclick="setTxType('bord')">
+                    <i class="fa fa-arrow-up"></i> پرداخت
+                </button>
+            </div>
+
+            <label>طرف حساب</label>
+            <div class="flex-row gap-10">
+                <select id="tx-customer" style="margin-bottom: 0;"><option value="">انتخاب...</option></select>
+                <button class="btn btn-outline" style="width: 50px; height: 50px; padding:0; flex-shrink:0;" onclick="openCustomerModal()"><i class="fa fa-plus"></i></button>
+            </div>
+
+            <div class="flex-row gap-10" style="margin-top: 20px;">
+                <div style="flex: 2;">
+                    <label>مبلغ</label>
+                    <input type="number" id="tx-amount" style="font-size: 1.2rem; font-weight: bold; color: var(--gold); margin-bottom:0;" placeholder="0">
+                </div>
+                <div style="flex: 1;">
+                    <label>ارز</label>
+                    <select id="tx-curr" style="margin-bottom:0; text-align:center; padding-left:5px; padding-right:5px;">
+                        <option value="AFN">AFN</option>
+                        <option value="USD">USD</option>
+                        <option value="EUR">EUR</option>
+                        <option value="IRT">IRT</option>
+                        <option value="AED">AED</option>
+                    </select>
+                </div>
+            </div>
+            
+            <label>بابت</label>
+            <input type="text" id="tx-desc" placeholder="توضیحات...">
+            
+            <label>تاریخ سند</label>
+            <input type="date" id="tx-date" style="color-scheme: dark;">
+
+            <button class="btn shine-effect" onclick="saveTransaction()" id="btn-save-tx">ثبت نهایی</button>
+            <button class="btn" onclick="cancelEditMode()" id="btn-cancel-edit" style="display: none; background: rgba(255,255,255,0.1); color: #fff; box-shadow: none;">لغو</button>
+        </div>
+    </div>
+
+    <div id="reports-page" class="page">
+        <div class="card">
+            <h3 class="gold-text">گزارشات و فیلتر</h3>
+            <label>فیلتر حساب</label>
+            <select id="report-customer" onchange="generateReportPreview()">
+                <option value="all">همه حساب‌ها</option>
+            </select>
+            <div class="flex-row gap-10">
+                <div style="flex:1"><label>از</label><input type="date" id="filter-date-from" onchange="generateReportPreview()" style="color-scheme:dark;"></div>
+                <div style="flex:1"><label>تا</label><input type="date" id="filter-date-to" onchange="generateReportPreview()" style="color-scheme:dark;"></div>
+            </div>
+            <div style="display: flex; gap: 15px; margin-top: 15px;">
+                <button class="btn btn-outline" onclick="printReport()"><i class="fa fa-print"></i> پرینت</button>
+                <button class="btn btn-outline" onclick="exportToExcel()"><i class="fa fa-file-excel"></i> اکسل</button>
+            </div>
+        </div>
+        <div id="report-preview" class="card" style="background: #fff; color: #000; min-height: 200px; display: none;"></div>
+    </div>
+
+    <div id="settings-page" class="page">
+        <div class="card">
+            <div class="text-center" style="margin-bottom: 25px;">
+                <div class="avatar" style="width: 80px; height: 80px; margin: 0 auto 15px auto; font-size: 2rem; border-color: var(--gold); box-shadow: 0 0 20px rgba(212, 175, 55, 0.2);">
+                    <i class="fa fa-shield-halved"></i>
+                </div>
+                <h3 class="gold-text">تنظیمات سیستم</h3>
+            </div>
+
+            <label style="color: var(--gold);">تغییر رمز ورود</label>
+            <input type="password" id="setting-pin" placeholder="****" maxlength="6" onchange="updatePin(this.value)" style="letter-spacing: 5px; text-align: center;">
+
+            <label style="color: var(--gold);">اتصال ابری (Firebase)</label>
+            <div style="font-size:0.8rem; color:#666; margin-bottom:10px;">وضعیت اتصال: <span id="firebase-status-text">غیرفعال (تنظیمات را چک کنید)</span></div>
+            <button class="btn btn-outline" style="font-size:0.9rem;" onclick="syncToCloudManual()">همگام‌سازی دستی با سرور</button>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 25px;">
+                <button class="btn btn-outline" onclick="backupData()"><i class="fa fa-download"></i> بک‌آپ فایل</button>
+                <button class="btn btn-outline" onclick="document.getElementById('restore-file').click()"><i class="fa fa-upload"></i> بازیابی فایل</button>
+            </div>
+            <input type="file" id="restore-file" style="display: none;" onchange="restoreData(this)">
+            
+            <button class="btn" style="background: #330000; color:#ff4d4d; margin-top: 30px;" onclick="logout()">خروج امن</button>
+        </div>
+        <div style="text-align:center; color: #333; font-size: 0.7rem; margin-top: 20px;">Khademe Gold v5.0 | Build 2026</div>
+    </div>
+
+    <div id="customer-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="flex-row" style="justify-content:space-between; margin-bottom:20px;">
+                 <h3 class="gold-text" style="margin:0;">اطلاعات مشتری</h3>
+                 <span style="font-size:1.5rem; cursor:pointer;" onclick="closeCustomerModal()">&times;</span>
+            </div>
+            <input type="hidden" id="cust-id">
+            <input type="text" id="cust-name" placeholder="نام کامل">
+            <input type="tel" id="cust-phone" placeholder="شماره تماس">
+            <textarea id="cust-desc" rows="3" placeholder="یادداشت..." style="width:100%; background:var(--input-bg); border:1px solid #333; color:#fff; border-radius:14px; padding:15px; margin-top:10px;"></textarea>
+            <button class="btn shine-effect" style="margin-top: 20px;" onclick="saveCustomer()">ذخیره</button>
+        </div>
+    </div>
+
+    <div id="receipt-modal" class="modal-overlay">
+        <div style="display:flex; flex-direction:column; align-items:center;">
+             <div id="receipt-capture-area" style="background-color:white; width:320px; padding:20px; border-radius:10px; text-align:center; color:black; position:relative;">
+                <div style="border: 2px solid #D4AF37; padding: 10px;">
+                    <h2 style="margin:5px 0; font-family:'Playfair Display';">KHADEME</h2>
+                    <hr style="margin:10px 0; border-top:1px dashed #ccc;">
+                    <div style="display:flex; justify-content:space-between; font-size:0.8rem;">
+                        <span id="rec-date"></span>
+                        <span>No: <b id="rec-id"></b></span>
+                    </div>
+                    <div style="margin-top:15px; text-align:right;">
+                        <span style="color:#666; font-size:0.8rem;">طرف حساب:</span>
+                        <div id="rec-name" style="font-weight:bold; font-size:1.1rem;"></div>
+                    </div>
+                    <div style="background:#f5f5f5; padding:10px; margin-top:15px; border-radius:5px;">
+                        <div id="rec-type" style="font-size:0.8rem; color:#888;"></div>
+                        <div style="font-size:1.5rem; font-weight:bold;" id="rec-amount"></div>
+                        <div style="color:#D4AF37; font-weight:bold;" id="rec-curr"></div>
+                    </div>
+                    <div style="margin-top:10px; font-size:0.9rem; text-align:right;">بابت: <span id="rec-desc"></span></div>
+                </div>
+             </div>
+             <div style="margin-top:20px; display:flex; gap:10px;">
+                 <button class="btn shine-effect" onclick="downloadReceipt()" style="width:auto; padding:10px 25px; margin:0;">دانلود</button>
+                 <button class="btn btn-outline" onclick="document.getElementById('receipt-modal').style.display='none'" style="width:auto; background:#000; border:none; color:#fff; margin:0;">بستن</button>
+             </div>
+        </div>
+    </div>
+
+    <nav class="bottom-nav no-print">
+        <div class="nav-item active" onclick="switchPage('home-page', this)"><i class="fa fa-house"></i></div>
+        <div class="nav-item" onclick="switchPage('customers-page', this)"><i class="fa fa-users"></i></div>
+        <div class="add-btn-wrapper">
+             <div class="nav-item add-btn" onclick="prepareAddTransaction()"><i class="fa fa-plus"></i></div>
+        </div>
+        <div class="nav-item" onclick="switchPage('reports-page', this)"><i class="fa fa-chart-pie"></i></div>
+        <div class="nav-item" onclick="switchPage('settings-page', this)"><i class="fa fa-gear"></i></div>
+    </nav>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        // ============================================
+        // 🔴🔴 تنظیمات فایربیس خود را اینجا وارد کنید
+        // ============================================
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_PROJECT.firebaseapp.com",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_PROJECT.appspot.com",
+            messagingSenderId: "SENDER_ID",
+            appId: "APP_ID"
+        };
+
+        let db_firestore;
+        
+        try {
+            if (firebaseConfig.projectId !== "YOUR_PROJECT_ID") {
+                const app = initializeApp(firebaseConfig);
+                db_firestore = getFirestore(app);
+                document.getElementById('firebase-status-text').innerText = "فعال - متصل به سرور";
+                document.getElementById('firebase-status-text').style.color = "var(--success)";
+                document.getElementById('online-status').style.background = "var(--success)";
+            }
+        } catch(e) { console.error("Firebase Init Error", e); }
+
+        // توابع فایربیس را به ویندو متصل میکنیم تا از اسکریپت اصلی قابل دسترسی باشد
+        window.saveToCloud = async (data) => {
+            if(!db_firestore) return;
+            try {
+                await setDoc(doc(db_firestore, "backups", "main_data"), { json: JSON.stringify(data), timestamp: new Date() });
+                window.showToast("ذخیره در سرور انجام شد");
+            } catch(e) { window.showToast("خطا در ذخیره ابری", "error"); }
+        };
+    </script>
+
+    <script>
+        let db = { transactions: [], customers: [], settings: { pin: '' } };
+        let currentTxType = 'bord';
+        let chartInstance = null;
+
+        function init(){
+            const s = localStorage.getItem('khademeGoldUltra');
+            if(s) try{ db = JSON.parse(s); } catch(e){}
+            document.getElementById('setting-pin').value = db.settings.pin || '';
+            
+            renderHome();
+            renderCustomers();
+            populateCustomerSelects();
+        }
+
+        function saveData(){ 
+            localStorage.setItem('khademeGoldUltra', JSON.stringify(db));
+            // تلاش برای ذخیره در کلود (اگر فعال باشد)
+            if(window.saveToCloud) window.saveToCloud(db);
+        }
+        
+        function showToast(msg, type='success'){
+            const t = document.createElement('div');
+            t.style.cssText = `background:${type==='success'?'rgba(20,20,20,0.95)':'rgba(50,10,10,0.95)'}; color:#fff; padding:12px 24px; border-radius:50px; border:1px solid var(--gold); margin-bottom:10px; animation:fadeIn 0.3s; font-size:0.9rem; box-shadow:0 5px 15px rgba(0,0,0,0.5);`;
+            t.innerHTML = `<i class="fa ${type==='success'?'fa-check':'fa-exclamation'}"></i> ${msg}`;
+            document.getElementById('toast-container').appendChild(t);
+            setTimeout(()=>t.remove(), 3000);
+        }
+
+        // --- UI & Rendering Logic ---
+
+        function renderHome(){
+            // 1. محاسبه موجودی ارزها (جداگانه)
+            const balances = {};
+            const currencies = ['AFN', 'USD', 'EUR', 'IRT', 'AED'];
+            currencies.forEach(c => balances[c] = 0);
+
+            db.transactions.forEach(t => {
+                const c = t.currency || 'AFN';
+                if(t.type === 'avard') balances[c] = (balances[c]||0) + Number(t.amount);
+                else balances[c] = (balances[c]||0) - Number(t.amount);
+            });
+
+            // 2. ساخت کارت‌های ارز
+            const container = document.getElementById('currency-cards-container');
+            container.innerHTML = '';
+            
+            let hasCard = false;
+            for (const [curr, amt] of Object.entries(balances)) {
+                // نمایش همه ارزها حتی اگر صفر باشند برای زیبایی، یا میتوان شرط گذاشت
+                const card = document.createElement('div');
+                card.className = 'card currency-card';
+                card.innerHTML = `
+                    <div style="color:#888; font-size:0.8rem; letter-spacing:1px;">${curr}</div>
+                    <div style="color:var(--gold); font-size:1.4rem; font-weight:bold; margin-top:10px; direction:ltr;">${amt.toLocaleString()}</div>
+                    <div style="color:#444; font-size:0.7rem; margin-top:5px;">موجودی کل</div>
+                `;
+                container.appendChild(card);
+            }
+
+            // 3. لیست تراکنش‌های اخیر
+            const l = document.getElementById('recent-transactions-list'); l.innerHTML = '';
+            const recent = db.transactions.slice(0, 5); // 5 تای اول (جدیدترین‌ها)
+            
+            if(recent.length === 0) l.innerHTML = '<div style="text-align:center; color:#444; padding:20px;">هیچ تراکنشی نیست</div>';
+            
+            recent.forEach(t => {
+                const c = db.customers.find(x => x.id === t.customerId);
+                const col = t.type === 'avard' ? 'var(--success)' : 'var(--danger)';
+                const icon = t.type === 'avard' ? 'fa-arrow-down' : 'fa-arrow-up';
+                
+                l.innerHTML += `
+                    <div class="list-item">
+                        <div class="flex-row" style="flex:1;">
+                            <div class="avatar" style="border-color:${col}; color:${col}; width:40px; height:40px; font-size:0.9rem;">
+                                <i class="fa ${icon}"></i>
+                            </div>
+                            <div style="flex:1;">
+                                <div style="font-size:0.9rem; font-weight:bold;">${c?c.name:'ناشناس'}</div>
+                                <div style="font-size:0.7rem; color:#666;">${t.currency} <span style="margin:0 5px;">|</span> ${t.desc}</div>
+                            </div>
+                        </div>
+                        <div style="text-align:end;">
+                            <div style="font-weight:bold; color:${col}; direction:ltr; font-size:1rem;">${Number(t.amount).toLocaleString()}</div>
+                            <div style="display:flex; gap:15px; justify-content:flex-end; margin-top:5px;">
+                                <i class="fa fa-receipt" style="color:#666; font-size:0.8rem;" onclick="showReceiptModal('${t.id}')"></i>
+                                <i class="fa fa-trash" style="color:#444; font-size:0.8rem; cursor:pointer;" onclick="deleteTransaction(${t.id})"></i>
+                            </div>
+                        </div>
+                    </div>`;
+            });
+
+            renderChart();
+        }
+
+        function renderChart() {
+            const ctx = document.getElementById('financeChart').getContext('2d');
+            
+            // داده‌های 7 روز گذشته
+            const labels = [];
+            const dataIn = [];
+            const dataOut = [];
+            
+            for(let i=6; i>=0; i--) {
+                const d = new Date();
+                d.setDate(d.getDate() - i);
+                const isoDate = d.toISOString().split('T')[0];
+                labels.push(isoDate.slice(5).replace('-','/')); // ماه/روز
+                
+                let sumIn = 0;
+                let sumOut = 0;
+                
+                // نکته: اینجا تمام ارزها را با هم جمع میکنیم برای نمای کلی گراف.
+                // در برنامه پیشرفته باید تبدیل نرخ ارز داشته باشیم.
+                db.transactions.filter(t => t.date === isoDate).forEach(t => {
+                    if(t.type === 'avard') sumIn += Number(t.amount);
+                    else sumOut += Number(t.amount);
+                });
+                
+                dataIn.push(sumIn);
+                dataOut.push(sumOut);
+            }
+
+            if(chartInstance) chartInstance.destroy();
+
+            chartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        { label: 'ورودی', data: dataIn, backgroundColor: '#00e676', borderRadius: 4 },
+                        { label: 'خروجی', data: dataOut, backgroundColor: '#ff4d4d', borderRadius: 4 }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { labels: { color: '#999', font:{family:'Vazirmatn'} } } },
+                    scales: {
+                        y: { ticks: { color: '#555' }, grid: { color: 'rgba(255,255,255,0.05)' } },
+                        x: { ticks: { color: '#777' }, grid: { display: false } }
+                    }
+                }
+            });
+        }
+
+        // --- Transaction Logic ---
+        function setTxType(t){
+            currentTxType = t;
+            const btnA = document.getElementById('btn-type-avard');
+            const btnB = document.getElementById('btn-type-bord');
+            if(t==='avard'){
+                btnA.style.color='var(--success)'; btnA.style.border='1px solid var(--success)';
+                btnB.style.color='#666'; btnB.style.border='none';
+            } else {
+                btnB.style.color='var(--danger)'; btnB.style.border='1px solid var(--danger)';
+                btnA.style.color='#666'; btnA.style.border='none';
+            }
+        }
+        setTxType('bord');
+
+        function saveTransaction(){
+            const id = document.getElementById('edit-tx-id').value;
+            const cid = document.getElementById('tx-customer').value;
+            const amt = document.getElementById('tx-amount').value;
+            const cur = document.getElementById('tx-curr').value;
+            const desc = document.getElementById('tx-desc').value;
+            const date = document.getElementById('tx-date').value || new Date().toISOString().split('T')[0];
+
+            if(!cid || !amt){ showToast('اطلاعات ناقص است', 'error'); return; }
+
+            const txObj = {
+                id: id ? Number(id) : Date.now(),
+                serial: Math.floor(1000 + Math.random() * 9000),
+                customerId: cid,
+                type: currentTxType,
+                amount: Number(amt),
+                currency: cur,
+                desc: desc,
+                date: date
+            };
+
+            if(id){
+                const idx = db.transactions.findIndex(x => x.id == id);
+                if(idx > -1) db.transactions[idx] = txObj;
+            } else {
+                db.transactions.unshift(txObj);
+            }
+            
+            saveData();
+            showToast('سند ثبت شد');
+            cancelEditMode();
+            renderHome();
+        }
+
+        function deleteTransaction(id){
+            if(confirm("آیا مطمئن هستید که حذف شود؟")){
+                db.transactions = db.transactions.filter(t => t.id != id);
+                saveData();
+                renderHome();
+                showToast('حذف شد');
+            }
+        }
+
+        function prepareAddTransaction(){
+            cancelEditMode();
+            document.getElementById('tx-date').value = new Date().toISOString().split('T')[0];
+            switchPage('add-page', document.querySelector('.add-btn'));
+        }
+
+        function cancelEditMode(){
+            document.getElementById('edit-tx-id').value = '';
+            document.getElementById('tx-amount').value = '';
+            document.getElementById('tx-desc').value = '';
+            document.getElementById('tx-customer').value = '';
+            document.getElementById('add-page-title').innerText = 'تراکنش جدید';
+            document.getElementById('btn-cancel-edit').style.display = 'none';
+            setTxType('bord');
+        }
+
+        // --- Customer Logic ---
+        function renderCustomers(){
+            const l = document.getElementById('customers-list');
+            const search = document.getElementById('search-customer').value.toLowerCase();
+            l.innerHTML = '';
+            
+            db.customers.forEach(c => {
+                if(c.name.toLowerCase().includes(search)){
+                    // محاسبه مانده حساب (تخمین کلی یا بر اساس ارز پایه)
+                    // اینجا صرفاً تعداد تراکنش را نشان می‌دهیم تا پیچیده نشود
+                    const txCount = db.transactions.filter(t => t.customerId === c.id).length;
+                    
+                    l.innerHTML += `
+                        <div class="card list-item">
+                            <div class="flex-row" style="width:100%;">
+                                <div class="avatar"><i class="fa fa-user"></i></div>
+                                <div>
+                                    <div style="font-weight:bold;">${c.name}</div>
+                                    <div style="font-size:0.75rem; color:#666;">${c.phone||'-'}</div>
+                                </div>
+                            </div>
+                            <div style="text-align:end;">
+                                <div style="font-size:0.8rem; color:var(--gold);">${txCount} تراکنش</div>
+                                <div style="display:flex; gap:15px; justify-content:flex-end; margin-top:10px;">
+                                    <i class="fa fa-pen" style="color:#666" onclick="openCustomerModal('${c.id}')"></i>
+                                    <i class="fa fa-trash" style="color:var(--danger)" onclick="deleteCustomer('${c.id}')"></i>
+                                </div>
+                            </div>
+                        </div>`;
+                }
+            });
+        }
+
+        function openCustomerModal(id=null){
+            document.getElementById('customer-modal').style.display = 'flex';
+            document.getElementById('cust-id').value = id || '';
+            if(id){
+                const c = db.customers.find(x => x.id === id);
+                document.getElementById('cust-name').value = c.name;
+                document.getElementById('cust-phone').value = c.phone;
+                document.getElementById('cust-desc').value = c.info;
+            } else {
+                document.getElementById('cust-name').value = '';
+                document.getElementById('cust-phone').value = '';
+                document.getElementById('cust-desc').value = '';
+            }
+        }
+        function closeCustomerModal(){ document.getElementById('customer-modal').style.display = 'none'; }
+        
+        function saveCustomer(){
+            const id = document.getElementById('cust-id').value;
+            const name = document.getElementById('cust-name').value;
+            if(!name) return showToast('نام الزامی است', 'error');
+            
+            const obj = {
+                id: id || 'c'+Date.now(),
+                name: name,
+                phone: document.getElementById('cust-phone').value,
+                info: document.getElementById('cust-desc').value
+            };
+            
+            if(id){
+                const idx = db.customers.findIndex(c => c.id === id);
+                db.customers[idx] = obj;
+            } else {
+                db.customers.push(obj);
+            }
+            saveData();
+            closeCustomerModal();
+            renderCustomers();
+            populateCustomerSelects();
+            showToast('مشتری ذخیره شد');
+        }
+
+        function deleteCustomer(id){
+            if(confirm('حذف شود؟')){
+                if(db.transactions.some(t => t.customerId === id)){
+                    return showToast('این مشتری تراکنش دارد و حذف نمیشود', 'error');
+                }
+                db.customers = db.customers.filter(c => c.id !== id);
+                saveData();
+                renderCustomers();
+                populateCustomerSelects();
+            }
+        }
+
+        function populateCustomerSelects(){
+            const opts = `<option value="">انتخاب...</option>` + db.customers.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+            document.getElementById('tx-customer').innerHTML = opts;
+            document.getElementById('report-customer').innerHTML = `<option value="all">همه حساب‌ها</option>` + db.customers.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+        }
+
+        // --- General & Utils ---
+        function switchPage(pid, el){
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(pid).classList.add('active');
+            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+            if(el && !el.classList.contains('add-btn')) el.classList.add('active');
+            
+            if(pid === 'home-page') renderHome();
+            if(pid === 'customers-page') renderCustomers();
+        }
+
+        function checkLogin(){
+            const input = document.getElementById('login-pin').value;
+            if(!db.settings.pin || input === db.settings.pin){
+                document.getElementById('login-screen').style.display = 'none';
+                init();
+            } else {
+                document.getElementById('pin-error').style.display = 'block';
+            }
+        }
+
+        function updatePin(v){ db.settings.pin = v; saveData(); showToast('رمز تغییر کرد'); }
+        function logout(){ location.reload(); }
+        
+        function syncToCloudManual(){ saveData(); } // This triggers the saveToCloud via saveData
+
+        function showReceiptModal(txId){
+            let tx;
+            if(typeof txId === 'object') tx = txId; // اگر آبجکت پاس داده شد
+            else tx = db.transactions.find(t => t.id == txId);
+            
+            if(!tx) return;
+            const c = db.customers.find(x => x.id == tx.customerId);
+            
+            document.getElementById('rec-id').innerText = tx.serial || '---';
+            document.getElementById('rec-date').innerText = tx.date;
+            document.getElementById('rec-name').innerText = c ? c.name : '---';
+            document.getElementById('rec-type').innerText = tx.type==='bord'?'سند پرداخت':'سند دریافت';
+            document.getElementById('rec-amount').innerText = Number(tx.amount).toLocaleString();
+            document.getElementById('rec-curr').innerText = tx.currency;
+            document.getElementById('rec-desc').innerText = tx.desc;
+            document.getElementById('receipt-modal').style.display = 'flex';
+        }
+
+        function downloadReceipt(){
+            html2canvas(document.getElementById('receipt-capture-area'), {scale:2}).then(c => {
+                const a = document.createElement('a');
+                a.download = 'receipt.png'; a.href = c.toDataURL(); a.click();
+            });
+        }
+
+        function exportToExcel(){
+            // اضافه کردن BOM برای پشتیبانی از فارسی در اکسل
+            let csvContent = "\uFEFFID,Date,Customer,Currency,Type,Amount,Description\n";
+            
+            const cid = document.getElementById('report-customer').value;
+            const fromD = document.getElementById('filter-date-from').value;
+            const toD = document.getElementById('filter-date-to').value;
+            
+            let data = db.transactions;
+            if(cid !== 'all') data = data.filter(t => t.customerId === cid);
+            if(fromD) data = data.filter(t => t.date >= fromD);
+            if(toD) data = data.filter(t => t.date <= toD);
+
+            data.forEach(t => {
+                const c = db.customers.find(x => x.id === t.customerId);
+                const type = t.type === 'avard' ? 'دریافت' : 'پرداخت';
+                csvContent += `${t.serial},${t.date},${c?c.name:'-'},${t.currency},${type},${t.amount},${t.desc}\n`;
+            });
+
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = "khademe_export.csv";
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+        }
+
+        function printReport(){
+            // گزارش ساده برای پرینت
+            generateReportPreview();
+            const content = document.getElementById('report-preview').innerHTML;
+            const originalBody = document.body.innerHTML;
+            document.body.innerHTML = `<div style="padding:20px; direction:rtl; font-family:tahoma;">${content}</div>`;
+            window.print();
+            location.reload(); 
+        }
+
+        function generateReportPreview(){
+            const prev = document.getElementById('report-preview');
+            prev.style.display = 'block';
+            
+            const cid = document.getElementById('report-customer').value;
+            const fromD = document.getElementById('filter-date-from').value;
+            const toD = document.getElementById('filter-date-to').value;
+            
+            let data = db.transactions;
+            if(cid !== 'all') data = data.filter(t => t.customerId === cid);
+            if(fromD) data = data.filter(t => t.date >= fromD);
+            if(toD) data = data.filter(t => t.date <= toD);
+
+            let html = `<table style="width:100%; border-collapse:collapse; font-size:0.8rem;">
+                <tr style="background:#eee; color:#000;"><th style="padding:8px;">تاریخ</th><th>شرح</th><th>ارز</th><th>مبلغ</th></tr>`;
+            
+            data.forEach(t => {
+                const color = t.type==='avard'?'green':'red';
+                html += `<tr style="border-bottom:1px solid #ddd;">
+                    <td style="padding:8px;">${t.date}</td>
+                    <td>${t.desc}</td>
+                    <td>${t.currency}</td>
+                    <td style="color:${color}; direction:ltr; font-weight:bold;">${Number(t.amount).toLocaleString()}</td>
+                </tr>`;
+            });
+            prev.innerHTML = html + "</table>";
+        }
+
+        function backupData(){
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db));
+            const node = document.createElement('a');
+            node.setAttribute("href", dataStr);
+            node.setAttribute("download", "khademe_backup_" + new Date().toISOString().slice(0,10) + ".json");
+            document.body.appendChild(node); node.click(); node.remove();
+        }
+
+        function restoreData(input){
+            const file = input.files[0];
+            const reader = new FileReader();
+            reader.onload = function(e){
+                try {
+                    db = JSON.parse(e.target.result);
+                    saveData();
+                    alert("بازگردانی انجام شد");
+                    location.reload();
+                } catch(err) { alert("فایل نامعتبر است"); }
+            };
+            reader.readAsText(file);
+        }
+
+        // بررسی لاگین در شروع
+        document.addEventListener("DOMContentLoaded", () => {
+             const s = localStorage.getItem('khademeGoldUltra');
+             if(s){
+                 const d = JSON.parse(s);
+                 if(d.settings && d.settings.pin && d.settings.pin.length > 0) return; // Wait for login
+             }
+             document.getElementById('login-screen').style.display = 'none';
+             init();
+        });
+
+    </script>
+</body>
+</html>
