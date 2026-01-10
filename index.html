@@ -2,900 +2,900 @@
 <html lang="fa" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Khademe Gold - Luxury Accounting</title>
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#050505">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>KHADEME | Financial Suite</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@200;400;600;800&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
     
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
-    
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
+    <script>
+        const logoSVG = encodeURIComponent(`<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="512" height="512" rx="128" fill="#050505"/><path d="M256 0L512 256L256 512L0 256L256 0Z" fill="url(#paint0_radial)" opacity="0.1"/><path d="M180 150V362M180 256H220M220 256L330 150M220 256L330 362" stroke="url(#goldGradient)" stroke-width="32" stroke-linecap="round" stroke-linejoin="round"/><defs><linearGradient id="goldGradient" x1="180" y1="150" x2="330" y2="362" gradientUnits="userSpaceOnUse"><stop stop-color="#BF953F"/><stop offset="0.5" stop-color="#FCF6BA"/><stop offset="1" stop-color="#B38728"/></linearGradient><radialGradient id="paint0_radial" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(256 256) rotate(90) scale(256)"><stop stop-color="#D4AF37"/><stop offset="1" stop-color="#000000" stop-opacity="0"/></radialGradient></defs></svg>`);
+        const link1 = document.createElement('link'); link1.rel = 'icon'; link1.href = `data:image/svg+xml,${logoSVG}`; document.head.appendChild(link1);
+    </script>
+
     <style>
         :root {
-            --bg-color: #050505;
-            --card-bg: rgba(30, 30, 30, 0.75);
-            --text-color: #f0f0f0;
-            --gold: #D4AF37;
-            --gold-light: #F4D03F;
-            --gold-gradient: linear-gradient(135deg, #D4AF37 0%, #F1C40F 50%, #AA8A26 100%);
-            --gold-text-gradient: linear-gradient(to bottom, #F4D03F, #D4AF37);
-            --danger: #ff4d4d;
-            --success: #00e676;
-            --input-bg: rgba(255, 255, 255, 0.08);
-            --border-radius: 20px;
-            --glass-border: 1px solid rgba(212, 175, 55, 0.3);
-            --shadow-gold: 0 8px 32px 0 rgba(212, 175, 55, 0.15);
+            --bg-body: #050505;
+            --bg-card: rgba(20, 20, 20, 0.75);
+            --bg-glass: rgba(255, 255, 255, 0.03);
+            --gold-primary: #D4AF37;
+            --gold-light: #FCF6BA;
+            --gold-dark: #AA771C;
+            --text-main: #FFFFFF;
+            --text-sec: #999999;
+            --accent-green: #2ecc71;
+            --accent-red: #e74c3c;
+            --nav-bg: rgba(10, 10, 10, 0.95);
+            --border-subtle: rgba(212, 175, 55, 0.2);
+            --shadow-glow: 0 0 25px rgba(212, 175, 55, 0.08);
         }
 
-        * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
-
-        body {
-            background-color: var(--bg-color);
-            background-image: 
-                radial-gradient(circle at 10% 20%, rgba(212, 175, 55, 0.05) 0%, transparent 40%),
-                radial-gradient(circle at 90% 80%, rgba(212, 175, 55, 0.05) 0%, transparent 40%);
-            color: var(--text-color);
-            font-family: 'Vazirmatn', sans-serif;
-            margin: 0; padding: 0; padding-bottom: 110px;
-            overflow-x: hidden; min-height: 100vh;
-        }
-
-        /* Scrollbar Hiding for Cards */
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-
-        .gold-text { 
-            background: var(--gold-text-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-weight: bold;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         
-        .shine-effect { position: relative; overflow: hidden; }
-        .shine-effect::after {
-            content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
-            background: linear-gradient(to right, transparent, rgba(255,255,255,0.2), transparent);
-            transform: skewX(-25deg); animation: shine 3s infinite;
-        }
-        @keyframes shine { 100% { left: 150%; } }
-
-        header {
-            background: rgba(5, 5, 5, 0.95);
-            padding: 15px 25px;
-            display: flex; justify-content: space-between; align-items: center;
-            position: sticky; top: 0; z-index: 100;
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(255,255,255,0.1);
+        body {
+            font-family: 'Vazirmatn', 'Inter', sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            overflow-x: hidden;
+            min-height: 100vh;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(212, 175, 55, 0.04) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(212, 175, 55, 0.04) 0%, transparent 40%);
+            padding-bottom: 100px; /* Increased for better scroll on mobile */
         }
 
-        .app-logo {
-            font-size: 1.4rem; letter-spacing: 1px; color: var(--gold);
-            font-weight: 900; font-family: 'Playfair Display', serif;
-        }
-
-        .card {
-            background: var(--card-bg);
-            backdrop-filter: blur(15px);
-            border-radius: var(--border-radius);
-            padding: 20px; margin: 15px;
-            border: var(--glass-border);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-            position: relative;
-        }
-
-        /* Currency Cards Style */
-        .currency-card {
-            display: inline-block;
-            width: 150px;
-            height: 100px;
-            margin-left: 10px;
-            vertical-align: top;
-            padding: 15px;
-            background: linear-gradient(160deg, #1a1a1a, #000);
-        }
-
-        .balance-amount {
-            font-size: 2.2rem; margin: 10px 0;
-            background: var(--gold-text-gradient);
+        /* Typography */
+        h1, h2, h3, h4 { font-family: 'Vazirmatn', serif; letter-spacing: -0.5px; }
+        .logo-text {
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+            font-size: 24px;
+            background: linear-gradient(135deg, var(--gold-light), var(--gold-primary), var(--gold-dark));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            direction: ltr; font-weight: 700; font-family: 'Playfair Display', serif;
+            letter-spacing: 2px;
+            text-transform: uppercase;
         }
 
-        .list-item {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 15px 0; border-bottom: 1px solid rgba(255,255,255,0.05);
-        }
-        .list-item:last-child { border-bottom: none; }
+        .app-container { max-width: 480px; margin: 0 auto; padding: 20px; position: relative; z-index: 2; }
 
-        .avatar {
-            width: 50px; height: 50px; border-radius: 16px;
-            background: #111;
-            display: flex; align-items: center; justify-content: center;
-            color: var(--gold); border: 1px solid rgba(212, 175, 55, 0.3);
-            margin-inline-end: 12px; font-size: 1.2rem; flex-shrink: 0;
+        /* Header */
+        header {
+            display: flex; justify-content: space-between; align-items: center; padding: 20px 0 30px 0;
+            position: sticky; top: 0; z-index: 10;
+            background: linear-gradient(to bottom, var(--bg-body) 85%, transparent);
         }
 
-        label { display: block; margin-bottom: 8px; color: #888; font-size: 0.8rem; margin-top: 15px; }
+        .icon-btn {
+            background: var(--bg-glass); border: 1px solid var(--border-subtle); color: var(--gold-primary);
+            width: 40px; height: 40px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center; cursor: pointer;
+            transition: all 0.3s ease; backdrop-filter: blur(10px);
+        }
+        .icon-btn:active { transform: scale(0.95); background: rgba(212, 175, 55, 0.1); }
+        .icon-btn.danger { color: var(--accent-red); border-color: rgba(231, 76, 60, 0.3); }
 
-        input, select, textarea {
-            width: 100%; background-color: var(--input-bg);
-            border: 1px solid #333; color: #fff;
-            padding: 16px; border-radius: 14px;
-            font-family: inherit; font-size: 1rem; transition: 0.3s;
+        /* Cards */
+        .lux-card {
+            background: var(--bg-card); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border-subtle); border-radius: 24px; padding: 24px;
+            margin-bottom: 20px; box-shadow: var(--shadow-glow); position: relative; overflow: hidden;
+        }
+        .lux-card::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.3), transparent);
         }
 
-        input:focus, select:focus {
-            border-color: var(--gold); 
-            background-color: rgba(255,255,255,0.1);
+        /* Stats */
+        .balance-hero { text-align: center; padding: 30px 20px; }
+        .balance-label { color: var(--text-sec); font-size: 14px; margin-bottom: 5px; }
+        .balance-amount { 
+            font-size: 42px; font-weight: 800; 
+            background: linear-gradient(to bottom, #fff, #bbb); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            font-family: 'Inter', sans-serif;
+            text-shadow: 0 5px 15px rgba(0,0,0,0.5);
         }
+        .stats-row { display: flex; justify-content: space-between; margin-top: 20px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.05); }
+        .stat-item { flex: 1; text-align: center; }
+        .stat-val { font-size: 18px; font-weight: 600; font-family: 'Inter', sans-serif; }
+        .income-text { color: var(--accent-green); }
+        .expense-text { color: var(--accent-red); }
 
-        .btn {
-            width: 100%; padding: 16px; border: none; border-radius: 14px;
-            font-weight: bold; font-size: 1rem; cursor: pointer;
-            background: var(--gold-gradient);
-            color: #000; margin-top: 20px; font-family: inherit;
-            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.2);
-            transition: 0.2s;
-        }
-        .btn:active { transform: scale(0.98); }
-
-        .btn-outline {
-            background: transparent; border: 1px solid var(--gold);
-            color: var(--gold); box-shadow: none; margin-top: 0;
-        }
-
+        /* Navigation */
         .bottom-nav {
-            position: fixed; bottom: 20px; left: 20px; right: 20px;
-            background: rgba(20, 20, 20, 0.95);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 25px;
-            display: flex; justify-content: space-around;
-            padding: 15px 0; z-index: 1000;
-            backdrop-filter: blur(20px);
+            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+            width: 90%; max-width: 440px; height: 75px;
+            background: var(--nav-bg); backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
+            border: 1px solid var(--border-subtle); border-radius: 30px;
+            display: flex; justify-content: space-around; align-items: center; z-index: 100;
             box-shadow: 0 10px 40px rgba(0,0,0,0.8);
         }
-
-        .nav-item { color: #666; font-size: 1.4rem; cursor: pointer; transition: 0.3s; position: relative; }
-        .nav-item.active { color: var(--gold); transform: translateY(-3px); }
-        
-        .add-btn-wrapper { position: relative; top: -40px; }
-        .nav-item.add-btn {
-            background: var(--gold-gradient);
-            color: #000; width: 65px; height: 65px;
-            border-radius: 20px; display: flex;
-            align-items: center; justify-content: center;
-            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.4);
-            font-size: 1.6rem; border: 4px solid #000;
+        .nav-link {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            color: var(--text-sec); font-size: 10px; gap: 6px; width: 60px; transition: 0.3s; cursor: pointer;
         }
+        .nav-link i { font-size: 20px; transition: 0.3s; }
+        .nav-link.active { color: var(--gold-primary); }
+        .nav-link.active i { transform: translateY(-5px); text-shadow: 0 0 15px rgba(212, 175, 55, 0.6); }
 
-        .page { display: none; padding-top: 10px; animation: fadeIn 0.3s ease; }
+        /* Inputs & Buttons */
+        .btn-gold {
+            width: 100%; background: linear-gradient(135deg, var(--gold-dark), var(--gold-primary)); color: #000;
+            border: none; padding: 16px; border-radius: 16px; font-weight: 700; font-size: 16px;
+            cursor: pointer; box-shadow: 0 5px 20px rgba(212, 175, 55, 0.2); transition: 0.3s;
+        }
+        .btn-gold:active { transform: scale(0.98); }
+
+        .btn-outline {
+            width: 100%; background: transparent; border: 1px solid var(--border-subtle); color: var(--gold-primary);
+            padding: 14px; border-radius: 14px; font-weight: 600; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.3s;
+        }
+        .btn-outline:hover { background: rgba(212, 175, 55, 0.05); }
+
+        input, select, textarea {
+            width: 100%; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); color: #fff;
+            padding: 16px; border-radius: 14px; font-size: 16px; font-family: inherit; margin-bottom: 15px; transition: 0.3s;
+        }
+        input:focus, select:focus { outline: none; border-color: var(--gold-primary); background: rgba(0,0,0,0.5); }
+
+        /* List Items */
+        .tx-list { display: flex; flex-direction: column; gap: 12px; }
+        .tx-item {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 16px; background: rgba(255,255,255,0.03); border-radius: 18px; 
+            border: 1px solid transparent; transition: 0.3s; position: relative;
+        }
+        .tx-item:hover { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.05); }
+        
+        .tx-left-group { display: flex; align-items: center; gap: 15px; flex: 1; overflow: hidden; }
+        .tx-icon {
+            min-width: 48px; height: 48px; border-radius: 14px; display: flex; align-items: center; justify-content: center;
+            font-size: 18px;
+        }
+        .tx-icon.in { background: rgba(46, 204, 113, 0.15); color: var(--accent-green); }
+        .tx-icon.out { background: rgba(231, 76, 60, 0.15); color: var(--accent-red); }
+        
+        .tx-info { overflow: hidden; }
+        .tx-info h4 { font-size: 15px; margin-bottom: 4px; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .tx-info p { font-size: 12px; color: var(--text-sec); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        
+        .tx-right-group { text-align: left; margin-right: 10px; display: flex; flex-direction: column; align-items: flex-end;}
+        .tx-amount { font-family: 'Inter', sans-serif; font-weight: 600; white-space: nowrap; }
+        
+        .tx-actions {
+            display: flex; gap: 10px; align-items: center; margin-right: 10px;
+        }
+        .btn-delete-mini {
+            color: #555; cursor: pointer; font-size: 14px; padding: 5px; transition: 0.2s;
+        }
+        .btn-delete-mini:hover { color: var(--accent-red); }
+
+        /* Loader */
+        #loader {
+            position: fixed; inset: 0; background: #000; z-index: 9999;
+            display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.5s;
+        }
+        .loader-logo { width: 80px; height: 80px; animation: pulse 2s infinite; margin-bottom: 20px;}
+        @keyframes pulse { 0% { opacity: 0.5; transform: scale(0.95); } 50% { opacity: 1; transform: scale(1.05); } 100% { opacity: 0.5; transform: scale(0.95); } }
+
+        /* Utility */
+        .hidden { display: none !important; }
+        .page { display: none; animation: fadeIn 0.4s ease-out; }
         .page.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        .modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9); z-index: 2000;
-            display: none; align-items: center; justify-content: center;
-            padding: 20px; backdrop-filter: blur(5px);
-        }
-        .modal-content {
-            background: #151515; border: 1px solid var(--gold);
-            width: 100%; max-width: 400px; border-radius: 24px;
-            padding: 25px; position: relative;
-        }
-
-        /* Flex Utilities */
-        .flex-row { display: flex; align-items: center; }
-        .gap-10 { gap: 10px; }
         
-        @media print { .no-print { display: none !important; } }
+        .sync-badge { font-size: 10px; padding: 4px 8px; border-radius: 10px; background: #222; color: #666; display: inline-block; margin-top: 5px; }
+        .sync-badge.online { color: var(--accent-green); border: 1px solid rgba(46, 204, 113, 0.2); }
     </style>
 </head>
 <body>
 
-    <div id="toast-container" style="position:fixed; top:20px; left:50%; transform:translateX(-50%); z-index:5000;"></div>
+    <div id="loader">
+        <svg class="loader-logo" viewBox="0 0 512 512" fill="none">
+            <rect width="512" height="512" rx="128" stroke="#D4AF37" stroke-width="10"/>
+            <path d="M180 150V362M180 256H220M220 256L330 150M220 256L330 362" stroke="#D4AF37" stroke-width="32" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <div class="logo-text" style="font-size: 16px; letter-spacing: 4px;">KHADEME</div>
+    </div>
 
-    <div id="login-screen" style="position:fixed; top:0; left:0; right:0; bottom:0; background:#000; z-index:3000; display:flex; flex-direction:column; justify-content:center; text-align:center; padding:30px;">
-        <div class="app-logo" style="font-size: 3.5rem; margin-bottom: 5px;">KHADEME</div>
-        <div style="color: var(--gold); font-size: 0.9rem; margin-bottom: 60px; letter-spacing: 4px; text-transform:uppercase;">Luxury Finance</div>
+    <div class="app-container">
         
-        <input type="password" id="login-pin" placeholder="PIN" style="text-align: center; letter-spacing: 15px; font-size: 1.5rem; background:transparent; border:none; border-bottom:1px solid var(--gold); border-radius:0; max-width:180px; margin:0 auto;" maxlength="6">
-        <button class="btn shine-effect" onclick="checkLogin()" style="margin-top:40px; max-width:200px; margin-left:auto; margin-right:auto;">ENTER</button>
-        <p id="pin-error" style="color: var(--danger); display: none; margin-top:20px; font-size:0.9rem;">رمز اشتباه است</p>
-    </div>
-
-    <header>
-        <div class="app-logo">KHADEME</div>
-        <div class="flex-row gap-10">
-            <div id="online-status" style="width: 10px; height: 10px; background: #333; border-radius: 50%;"></div>
-        </div>
-    </header>
-
-    <div id="home-page" class="page active">
-        <div style="overflow-x: auto; white-space: nowrap; padding-bottom: 10px; padding-left: 15px; padding-right: 15px;" class="no-scrollbar">
-            <div id="currency-cards-container"></div>
-        </div>
-
-        <div class="card" style="margin-top: 5px;">
-            <div class="flex-row" style="justify-content: space-between; margin-bottom: 10px;">
-                <h3 class="gold-text" style="font-size: 1rem; margin:0;">روند مالی (۷ روز)</h3>
+        <header>
+            <div class="icon-btn" onclick="toggleLang()">
+                <i class="fas fa-globe"></i>
             </div>
-            <div style="height: 200px; width: 100%;">
-                <canvas id="financeChart"></canvas>
+            <div class="logo-text">KHADEME</div>
+            <div class="icon-btn" onclick="navigate('settings')">
+                <i class="fas fa-sliders-h"></i>
             </div>
-        </div>
+        </header>
 
-        <div class="card">
-            <div class="flex-row" style="justify-content: space-between; margin-bottom: 20px;">
-                <h3 class="gold-text" style="font-size: 1.1rem; margin: 0;">تراکنش‌ها</h3>
-                <span style="font-size: 0.8rem; color: #666;" onclick="switchPage('reports-page', null)">همه</span>
-            </div>
-            <div id="recent-transactions-list"></div>
-        </div>
-    </div>
-
-    <div id="customers-page" class="page">
-        <div style="padding: 15px 20px;">
-            <div class="flex-row gap-10">
-                <input type="text" id="search-customer" onkeyup="renderCustomers()" style="margin-bottom: 0; border-radius: 50px; padding-right: 20px;" placeholder="جستجوی مشتری...">
-                <button class="btn shine-effect" style="width: auto; margin-top: 0; border-radius: 50%; width: 50px; height: 50px; padding:0; flex-shrink:0;" onclick="openCustomerModal()">
-                    <i class="fa fa-plus"></i>
-                </button>
-            </div>
-        </div>
-        <div id="customers-list" style="padding-bottom: 100px;"></div>
-    </div>
-
-    <div id="add-page" class="page">
-        <div class="card">
-            <h2 class="gold-text text-center" style="margin-bottom: 25px;" id="add-page-title">تراکنش جدید</h2>
-            <input type="hidden" id="edit-tx-id">
-            
-            <div style="background: rgba(255,255,255,0.05); padding: 5px; border-radius: 15px; display: flex; margin-bottom: 20px;">
-                <button class="btn" style="flex:1; margin:0; background: transparent; color:#666; box-shadow: none;" id="btn-type-avard" onclick="setTxType('avard')">
-                    <i class="fa fa-arrow-down"></i> دریافت
-                </button>
-                <button class="btn" style="flex:1; margin:0; background: transparent; color:#666; box-shadow: none;" id="btn-type-bord" onclick="setTxType('bord')">
-                    <i class="fa fa-arrow-up"></i> پرداخت
-                </button>
-            </div>
-
-            <label>طرف حساب</label>
-            <div class="flex-row gap-10">
-                <select id="tx-customer" style="margin-bottom: 0;"><option value="">انتخاب...</option></select>
-                <button class="btn btn-outline" style="width: 50px; height: 50px; padding:0; flex-shrink:0;" onclick="openCustomerModal()"><i class="fa fa-plus"></i></button>
-            </div>
-
-            <div class="flex-row gap-10" style="margin-top: 20px;">
-                <div style="flex: 2;">
-                    <label>مبلغ</label>
-                    <input type="number" id="tx-amount" style="font-size: 1.2rem; font-weight: bold; color: var(--gold); margin-bottom:0;" placeholder="0">
-                </div>
-                <div style="flex: 1;">
-                    <label>ارز</label>
-                    <select id="tx-curr" style="margin-bottom:0; text-align:center; padding-left:5px; padding-right:5px;">
-                        <option value="AFN">AFN</option>
-                        <option value="USD">USD</option>
-                        <option value="EUR">EUR</option>
-                        <option value="IRT">IRT</option>
-                        <option value="AED">AED</option>
-                    </select>
+        <div id="home-page" class="page active">
+            <div class="lux-card balance-hero">
+                <div class="balance-label" data-key="total-balance">موجودی کل</div>
+                <div class="balance-amount" id="total-balance">0</div>
+                <div class="stats-row">
+                    <div class="stat-item">
+                        <div style="font-size: 12px; color: #888; margin-bottom: 5px;" data-key="income">دریافتی</div>
+                        <div class="stat-val income-text" id="total-income">0</div>
+                    </div>
+                    <div class="stat-item" style="border-right: 1px solid rgba(255,255,255,0.1)">
+                        <div style="font-size: 12px; color: #888; margin-bottom: 5px;" data-key="expense">پرداختی</div>
+                        <div class="stat-val expense-text" id="total-expense">0</div>
+                    </div>
                 </div>
             </div>
-            
-            <label>بابت</label>
-            <input type="text" id="tx-desc" placeholder="توضیحات...">
-            
-            <label>تاریخ سند</label>
-            <input type="date" id="tx-date" style="color-scheme: dark;">
 
-            <button class="btn shine-effect" onclick="saveTransaction()" id="btn-save-tx">ثبت نهایی</button>
-            <button class="btn" onclick="cancelEditMode()" id="btn-cancel-edit" style="display: none; background: rgba(255,255,255,0.1); color: #fff; box-shadow: none;">لغو</button>
+            <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                <button class="btn-gold" style="flex:1" onclick="openTxModal('income')">
+                    <i class="fas fa-plus"></i> <span data-key="income">دریافت</span>
+                </button>
+                <button class="btn-outline" style="flex:1; background: rgba(231, 76, 60, 0.1); border-color: rgba(231, 76, 60, 0.3); color: var(--accent-red);" onclick="openTxModal('expense')">
+                    <i class="fas fa-minus"></i> <span data-key="expense">پرداخت</span>
+                </button>
+            </div>
+
+            <div class="lux-card" style="padding: 15px;">
+                <h4 style="font-size: 12px; color: #888; margin-bottom: 10px;">نمودار روند موجودی</h4>
+                <div style="position: relative; height: 200px;">
+                    <canvas id="mainChart"></canvas>
+                </div>
+            </div>
+
+            <h3 style="margin-bottom: 15px; font-size: 18px; color: var(--gold-primary);" data-key="recent">تراکنش‌های اخیر</h3>
+            <div class="tx-list" id="recent-transactions"></div>
         </div>
+
+        <div id="transactions-page" class="page">
+            <div class="lux-card">
+                <h2 style="margin-bottom: 15px; color: var(--gold-primary);" data-key="transactions">تراکنش‌ها</h2>
+                <div class="form-group">
+                    <input type="text" id="search-tx" placeholder="جستجو (نام مشتری، توضیحات)..." onkeyup="renderTransactionsPage()">
+                </div>
+            </div>
+            <div class="tx-list" id="all-transactions"></div>
+        </div>
+
+        <div id="customers-page" class="page">
+            <div class="lux-card">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                    <h2 style="color: var(--gold-primary);" data-key="customers">مشتریان</h2>
+                    <button class="icon-btn" onclick="document.getElementById('add-customer-area').classList.toggle('hidden')"><i class="fas fa-plus"></i></button>
+                </div>
+                
+                <div id="add-customer-area" class="hidden" style="margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px;">
+                    <input type="text" id="new-cust-name" placeholder="نام مشتری">
+                    <input type="tel" id="new-cust-phone" placeholder="شماره تماس">
+                    <button class="btn-gold" onclick="addCustomer()">افزودن</button>
+                </div>
+
+                <div class="tx-list" id="customers-list"></div>
+            </div>
+        </div>
+
+        <div id="reports-page" class="page">
+            <div class="lux-card">
+                <h2 style="margin-bottom: 20px; color: var(--gold-primary);" data-key="reports">گزارشات مالی</h2>
+                
+                <select id="report-filter" onchange="renderReportsPage()" style="padding: 10px; font-size: 14px; margin-bottom: 20px;">
+                    <option value="all">همه زمان‌ها</option>
+                    <option value="month">این ماه</option>
+                    <option value="last_month">ماه گذشته</option>
+                </select>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px;">
+                    <div style="background: rgba(46, 204, 113, 0.1); padding: 15px; border-radius: 12px; text-align: center;">
+                        <span style="font-size: 10px; color: #aaa;">درآمد دوره</span>
+                        <div id="rep-inc" style="color: var(--accent-green); font-weight: bold; margin-top: 5px;">0</div>
+                    </div>
+                    <div style="background: rgba(231, 76, 60, 0.1); padding: 15px; border-radius: 12px; text-align: center;">
+                        <span style="font-size: 10px; color: #aaa;">هزینه دوره</span>
+                        <div id="rep-exp" style="color: var(--accent-red); font-weight: bold; margin-top: 5px;">0</div>
+                    </div>
+                </div>
+
+                <div style="background: rgba(212, 175, 55, 0.1); padding: 15px; border-radius: 12px; text-align: center; margin-bottom: 20px; border: 1px solid rgba(212, 175, 55, 0.2);">
+                    <span style="font-size: 12px; color: var(--gold-primary);">سود خالص دوره</span>
+                    <div id="rep-net" style="color: #fff; font-weight: 800; font-size: 20px; margin-top: 5px;">0</div>
+                </div>
+
+                <div style="height: 250px; display: flex; justify-content: center; margin-bottom: 20px;">
+                    <canvas id="reportPieChart"></canvas>
+                </div>
+
+                <button class="btn-outline" onclick="exportExcel()">
+                    <i class="fas fa-file-excel"></i> خروجی اکسل گزارشات
+                </button>
+            </div>
+
+            <div class="lux-card">
+                <h3 style="margin-bottom: 15px; font-size: 16px; color: #fff;">مشتریان برتر (حجم مالی)</h3>
+                <div class="tx-list" id="top-customers-list"></div>
+            </div>
+        </div>
+
+        <div id="settings-page" class="page">
+            <div class="lux-card">
+                <h2 style="margin-bottom: 20px; color: var(--gold-primary);" data-key="settings">تنظیمات</h2>
+                
+                <div style="margin-bottom: 25px;">
+                    <h4 style="margin-bottom: 10px; font-size: 14px; color: #888;">پشتیبان‌گیری ابری (Firebase)</h4>
+                    <p style="font-size: 11px; color: #666; margin-bottom: 10px;">اطلاعات خود را در فضای ابری ذخیره کنید تا در دستگاه‌های دیگر قابل دسترسی باشد.</p>
+                    
+                    <button class="btn-outline" onclick="syncUpload()" style="margin-bottom: 10px; border-color: var(--accent-green); color: var(--accent-green);">
+                        <i class="fas fa-cloud-upload-alt"></i> آپلود به سرور (Backup)
+                    </button>
+                    
+                    <button class="btn-outline" onclick="syncDownload()" style="border-color: var(--gold-primary); color: var(--gold-primary);">
+                        <i class="fas fa-cloud-download-alt"></i> دانلود از سرور (Restore)
+                    </button>
+                    
+                    <div id="sync-status" class="sync-badge">وضعیت: تنظیم نشده</div>
+                </div>
+                
+                <div>
+                    <h4 style="margin-bottom: 10px; font-size: 14px; color: #888;">داده‌ها</h4>
+                    <button class="btn-outline" onclick="if(confirm('آیا مطمئن هستید؟ همه اطلاعات پاک میشود!')) { localStorage.clear(); location.reload(); }" style="border-color: var(--accent-red); color: var(--accent-red);">
+                        <i class="fas fa-trash"></i> حذف تمام اطلاعات (Reset)
+                    </button>
+                </div>
+            </div>
+        </div>
+
     </div>
 
-    <div id="reports-page" class="page">
-        <div class="card">
-            <h3 class="gold-text">گزارشات و فیلتر</h3>
-            <label>فیلتر حساب</label>
-            <select id="report-customer" onchange="generateReportPreview()">
-                <option value="all">همه حساب‌ها</option>
+    <div id="tx-modal" class="hidden" style="position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 2000; padding: 20px; align-items: center; justify-content: center; display: flex;">
+        <div class="lux-card" style="width: 100%; max-width: 400px; animation: fadeIn 0.3s;">
+            <div style="display:flex; justify-content:space-between; margin-bottom: 20px;">
+                <h3 id="modal-title">تراکنش جدید</h3>
+                <i class="fas fa-times" onclick="document.getElementById('tx-modal').classList.add('hidden')" style="padding: 10px; cursor: pointer;"></i>
+            </div>
+            
+            <input type="number" id="tx-amount" step="0.01" placeholder="مبلغ (تومان/درهم)">
+            <select id="tx-currency">
+                <option value="Toman">تومان</option>
+                <option value="AED">درهم (AED)</option>
+                <option value="USD">دلار (USD)</option>
+                <option value="EUR">یورو (EUR)</option>
             </select>
-            <div class="flex-row gap-10">
-                <div style="flex:1"><label>از</label><input type="date" id="filter-date-from" onchange="generateReportPreview()" style="color-scheme:dark;"></div>
-                <div style="flex:1"><label>تا</label><input type="date" id="filter-date-to" onchange="generateReportPreview()" style="color-scheme:dark;"></div>
-            </div>
-            <div style="display: flex; gap: 15px; margin-top: 15px;">
-                <button class="btn btn-outline" onclick="printReport()"><i class="fa fa-print"></i> پرینت</button>
-                <button class="btn btn-outline" onclick="exportToExcel()"><i class="fa fa-file-excel"></i> اکسل</button>
-            </div>
-        </div>
-        <div id="report-preview" class="card" style="background: #fff; color: #000; min-height: 200px; display: none;"></div>
-    </div>
-
-    <div id="settings-page" class="page">
-        <div class="card">
-            <div class="text-center" style="margin-bottom: 25px;">
-                <div class="avatar" style="width: 80px; height: 80px; margin: 0 auto 15px auto; font-size: 2rem; border-color: var(--gold); box-shadow: 0 0 20px rgba(212, 175, 55, 0.2);">
-                    <i class="fa fa-shield-halved"></i>
-                </div>
-                <h3 class="gold-text">تنظیمات سیستم</h3>
-            </div>
-
-            <label style="color: var(--gold);">تغییر رمز ورود</label>
-            <input type="password" id="setting-pin" placeholder="****" maxlength="6" onchange="updatePin(this.value)" style="letter-spacing: 5px; text-align: center;">
-
-            <label style="color: var(--gold);">اتصال ابری (Firebase)</label>
-            <div style="font-size:0.8rem; color:#666; margin-bottom:10px;">وضعیت اتصال: <span id="firebase-status-text">غیرفعال (تنظیمات را چک کنید)</span></div>
-            <button class="btn btn-outline" style="font-size:0.9rem;" onclick="syncToCloudManual()">همگام‌سازی دستی با سرور</button>
-
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 25px;">
-                <button class="btn btn-outline" onclick="backupData()"><i class="fa fa-download"></i> بک‌آپ فایل</button>
-                <button class="btn btn-outline" onclick="document.getElementById('restore-file').click()"><i class="fa fa-upload"></i> بازیابی فایل</button>
-            </div>
-            <input type="file" id="restore-file" style="display: none;" onchange="restoreData(this)">
+            <select id="tx-customer-select">
+                <option value="" disabled selected>انتخاب مشتری</option>
+            </select>
+            <textarea id="tx-desc" rows="2" placeholder="توضیحات..." style="width:100%; background:rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.1); border-radius:14px; color:#fff; padding:10px; margin-bottom:15px;"></textarea>
             
-            <button class="btn" style="background: #330000; color:#ff4d4d; margin-top: 30px;" onclick="logout()">خروج امن</button>
-        </div>
-        <div style="text-align:center; color: #333; font-size: 0.7rem; margin-top: 20px;">Khademe Gold v5.0 | Build 2026</div>
-    </div>
-
-    <div id="customer-modal" class="modal-overlay">
-        <div class="modal-content">
-            <div class="flex-row" style="justify-content:space-between; margin-bottom:20px;">
-                 <h3 class="gold-text" style="margin:0;">اطلاعات مشتری</h3>
-                 <span style="font-size:1.5rem; cursor:pointer;" onclick="closeCustomerModal()">&times;</span>
-            </div>
-            <input type="hidden" id="cust-id">
-            <input type="text" id="cust-name" placeholder="نام کامل">
-            <input type="tel" id="cust-phone" placeholder="شماره تماس">
-            <textarea id="cust-desc" rows="3" placeholder="یادداشت..." style="width:100%; background:var(--input-bg); border:1px solid #333; color:#fff; border-radius:14px; padding:15px; margin-top:10px;"></textarea>
-            <button class="btn shine-effect" style="margin-top: 20px;" onclick="saveCustomer()">ذخیره</button>
+            <button class="btn-gold" onclick="saveTransaction()">ثبت نهایی</button>
         </div>
     </div>
 
-    <div id="receipt-modal" class="modal-overlay">
-        <div style="display:flex; flex-direction:column; align-items:center;">
-             <div id="receipt-capture-area" style="background-color:white; width:320px; padding:20px; border-radius:10px; text-align:center; color:black; position:relative;">
-                <div style="border: 2px solid #D4AF37; padding: 10px;">
-                    <h2 style="margin:5px 0; font-family:'Playfair Display';">KHADEME</h2>
-                    <hr style="margin:10px 0; border-top:1px dashed #ccc;">
-                    <div style="display:flex; justify-content:space-between; font-size:0.8rem;">
-                        <span id="rec-date"></span>
-                        <span>No: <b id="rec-id"></b></span>
-                    </div>
-                    <div style="margin-top:15px; text-align:right;">
-                        <span style="color:#666; font-size:0.8rem;">طرف حساب:</span>
-                        <div id="rec-name" style="font-weight:bold; font-size:1.1rem;"></div>
-                    </div>
-                    <div style="background:#f5f5f5; padding:10px; margin-top:15px; border-radius:5px;">
-                        <div id="rec-type" style="font-size:0.8rem; color:#888;"></div>
-                        <div style="font-size:1.5rem; font-weight:bold;" id="rec-amount"></div>
-                        <div style="color:#D4AF37; font-weight:bold;" id="rec-curr"></div>
-                    </div>
-                    <div style="margin-top:10px; font-size:0.9rem; text-align:right;">بابت: <span id="rec-desc"></span></div>
-                </div>
-             </div>
-             <div style="margin-top:20px; display:flex; gap:10px;">
-                 <button class="btn shine-effect" onclick="downloadReceipt()" style="width:auto; padding:10px 25px; margin:0;">دانلود</button>
-                 <button class="btn btn-outline" onclick="document.getElementById('receipt-modal').style.display='none'" style="width:auto; background:#000; border:none; color:#fff; margin:0;">بستن</button>
-             </div>
+    <nav class="bottom-nav">
+        <div class="nav-link active" onclick="navigate('home', this)">
+            <i class="fas fa-home"></i>
+            <span data-key="home">خانه</span>
         </div>
-    </div>
-
-    <nav class="bottom-nav no-print">
-        <div class="nav-item active" onclick="switchPage('home-page', this)"><i class="fa fa-house"></i></div>
-        <div class="nav-item" onclick="switchPage('customers-page', this)"><i class="fa fa-users"></i></div>
-        <div class="add-btn-wrapper">
-             <div class="nav-item add-btn" onclick="prepareAddTransaction()"><i class="fa fa-plus"></i></div>
+        <div class="nav-link" onclick="navigate('transactions', this)">
+            <i class="fas fa-wallet"></i>
+            <span data-key="transactions">کیف پول</span>
         </div>
-        <div class="nav-item" onclick="switchPage('reports-page', this)"><i class="fa fa-chart-pie"></i></div>
-        <div class="nav-item" onclick="switchPage('settings-page', this)"><i class="fa fa-gear"></i></div>
+        <div class="nav-link" onclick="navigate('customers', this)">
+            <i class="fas fa-users"></i>
+            <span data-key="customers">مشتریان</span>
+        </div>
+        <div class="nav-link" onclick="navigate('reports', this)">
+            <i class="fas fa-chart-pie"></i>
+            <span data-key="reports">گزارشات</span>
+        </div>
     </nav>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-        // ============================================
-        // 🔴🔴 تنظیمات فایربیس خود را اینجا وارد کنید
-        // ============================================
+    <script>
+        // --- CONFIGURATION ---
+        // برای فعالسازی، مقادیر زیر را از کنسول فایربیس خود پر کنید
         const firebaseConfig = {
-            apiKey: "YOUR_API_KEY",
-            authDomain: "YOUR_PROJECT.firebaseapp.com",
+            apiKey: "YOUR_API_KEY_HERE",
+            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
             projectId: "YOUR_PROJECT_ID",
-            storageBucket: "YOUR_PROJECT.appspot.com",
+            storageBucket: "YOUR_PROJECT_ID.appspot.com",
             messagingSenderId: "SENDER_ID",
             appId: "APP_ID"
         };
 
-        let db_firestore;
-        
-        try {
-            if (firebaseConfig.projectId !== "YOUR_PROJECT_ID") {
-                const app = initializeApp(firebaseConfig);
-                db_firestore = getFirestore(app);
-                document.getElementById('firebase-status-text').innerText = "فعال - متصل به سرور";
-                document.getElementById('firebase-status-text').style.color = "var(--success)";
-                document.getElementById('online-status').style.background = "var(--success)";
-            }
-        } catch(e) { console.error("Firebase Init Error", e); }
-
-        // توابع فایربیس را به ویندو متصل میکنیم تا از اسکریپت اصلی قابل دسترسی باشد
-        window.saveToCloud = async (data) => {
-            if(!db_firestore) return;
-            try {
-                await setDoc(doc(db_firestore, "backups", "main_data"), { json: JSON.stringify(data), timestamp: new Date() });
-                window.showToast("ذخیره در سرور انجام شد");
-            } catch(e) { window.showToast("خطا در ذخیره ابری", "error"); }
+        // --- STATE ---
+        let db = null;
+        let data = {
+            transactions: [],
+            customers: [],
+            settings: { lang: 'fa' }
         };
-    </script>
+        let currentTxType = 'income';
 
-    <script>
-        let db = { transactions: [], customers: [], settings: { pin: '' } };
-        let currentTxType = 'bord';
-        let chartInstance = null;
+        // --- INIT ---
+        window.onload = async () => {
+            // Firebase Init Check
+            try {
+                if(firebaseConfig.apiKey !== "YOUR_API_KEY_HERE" && typeof firebase !== 'undefined') {
+                    firebase.initializeApp(firebaseConfig);
+                    db = firebase.firestore();
+                    document.getElementById('sync-status').textContent = 'Firebase Connected';
+                    document.getElementById('sync-status').classList.add('online');
+                }
+            } catch(e) { console.log("Firebase not configured or offline"); }
 
-        function init(){
-            const s = localStorage.getItem('khademeGoldUltra');
-            if(s) try{ db = JSON.parse(s); } catch(e){}
-            document.getElementById('setting-pin').value = db.settings.pin || '';
+            loadLocalData();
+            updateUI();
             
-            renderHome();
-            renderCustomers();
-            populateCustomerSelects();
+            setTimeout(() => {
+                const l = document.getElementById('loader');
+                l.style.opacity = '0';
+                setTimeout(()=> l.style.display = 'none', 500);
+            }, 1000);
+        };
+
+        // --- CORE FUNCTIONS ---
+        function loadLocalData() {
+            const saved = localStorage.getItem('khademe_data_v3');
+            if (saved) {
+                try {
+                    data = JSON.parse(saved);
+                    // Ensure structure integrity
+                    if(!data.transactions) data.transactions = [];
+                    if(!data.customers) data.customers = [];
+                } catch(e) {
+                    console.error("Data Parse Error", e);
+                }
+            }
         }
 
-        function saveData(){ 
-            localStorage.setItem('khademeGoldUltra', JSON.stringify(db));
-            // تلاش برای ذخیره در کلود (اگر فعال باشد)
-            if(window.saveToCloud) window.saveToCloud(db);
-        }
-        
-        function showToast(msg, type='success'){
-            const t = document.createElement('div');
-            t.style.cssText = `background:${type==='success'?'rgba(20,20,20,0.95)':'rgba(50,10,10,0.95)'}; color:#fff; padding:12px 24px; border-radius:50px; border:1px solid var(--gold); margin-bottom:10px; animation:fadeIn 0.3s; font-size:0.9rem; box-shadow:0 5px 15px rgba(0,0,0,0.5);`;
-            t.innerHTML = `<i class="fa ${type==='success'?'fa-check':'fa-exclamation'}"></i> ${msg}`;
-            document.getElementById('toast-container').appendChild(t);
-            setTimeout(()=>t.remove(), 3000);
+        function saveData() {
+            localStorage.setItem('khademe_data_v3', JSON.stringify(data));
+            updateUI();
         }
 
-        // --- UI & Rendering Logic ---
+        function formatMoney(amount) {
+            // Formats with commas and handles decimals properly
+            return parseFloat(amount).toLocaleString(undefined, { maximumFractionDigits: 2 });
+        }
 
-        function renderHome(){
-            // 1. محاسبه موجودی ارزها (جداگانه)
-            const balances = {};
-            const currencies = ['AFN', 'USD', 'EUR', 'IRT', 'AED'];
-            currencies.forEach(c => balances[c] = 0);
-
-            db.transactions.forEach(t => {
-                const c = t.currency || 'AFN';
-                if(t.type === 'avard') balances[c] = (balances[c]||0) + Number(t.amount);
-                else balances[c] = (balances[c]||0) - Number(t.amount);
-            });
-
-            // 2. ساخت کارت‌های ارز
-            const container = document.getElementById('currency-cards-container');
-            container.innerHTML = '';
+        // --- NAVIGATION ---
+        function navigate(pageId, el) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(pageId + '-page').classList.add('active');
             
-            let hasCard = false;
-            for (const [curr, amt] of Object.entries(balances)) {
-                // نمایش همه ارزها حتی اگر صفر باشند برای زیبایی، یا میتوان شرط گذاشت
-                const card = document.createElement('div');
-                card.className = 'card currency-card';
-                card.innerHTML = `
-                    <div style="color:#888; font-size:0.8rem; letter-spacing:1px;">${curr}</div>
-                    <div style="color:var(--gold); font-size:1.4rem; font-weight:bold; margin-top:10px; direction:ltr;">${amt.toLocaleString()}</div>
-                    <div style="color:#444; font-size:0.7rem; margin-top:5px;">موجودی کل</div>
-                `;
-                container.appendChild(card);
+            if(el) {
+                document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
+                el.classList.add('active');
             }
 
-            // 3. لیست تراکنش‌های اخیر
-            const l = document.getElementById('recent-transactions-list'); l.innerHTML = '';
-            const recent = db.transactions.slice(0, 5); // 5 تای اول (جدیدترین‌ها)
-            
-            if(recent.length === 0) l.innerHTML = '<div style="text-align:center; color:#444; padding:20px;">هیچ تراکنشی نیست</div>';
-            
-            recent.forEach(t => {
-                const c = db.customers.find(x => x.id === t.customerId);
-                const col = t.type === 'avard' ? 'var(--success)' : 'var(--danger)';
-                const icon = t.type === 'avard' ? 'fa-arrow-down' : 'fa-arrow-up';
-                
-                l.innerHTML += `
-                    <div class="list-item">
-                        <div class="flex-row" style="flex:1;">
-                            <div class="avatar" style="border-color:${col}; color:${col}; width:40px; height:40px; font-size:0.9rem;">
-                                <i class="fa ${icon}"></i>
-                            </div>
-                            <div style="flex:1;">
-                                <div style="font-size:0.9rem; font-weight:bold;">${c?c.name:'ناشناس'}</div>
-                                <div style="font-size:0.7rem; color:#666;">${t.currency} <span style="margin:0 5px;">|</span> ${t.desc}</div>
-                            </div>
-                        </div>
-                        <div style="text-align:end;">
-                            <div style="font-weight:bold; color:${col}; direction:ltr; font-size:1rem;">${Number(t.amount).toLocaleString()}</div>
-                            <div style="display:flex; gap:15px; justify-content:flex-end; margin-top:5px;">
-                                <i class="fa fa-receipt" style="color:#666; font-size:0.8rem;" onclick="showReceiptModal('${t.id}')"></i>
-                                <i class="fa fa-trash" style="color:#444; font-size:0.8rem; cursor:pointer;" onclick="deleteTransaction(${t.id})"></i>
-                            </div>
-                        </div>
-                    </div>`;
+            if(pageId === 'home') renderChart(); // Force redraw chart on tab switch
+            if(pageId === 'transactions') renderTransactionsPage();
+            if(pageId === 'customers') renderCustomersPage();
+            if(pageId === 'reports') renderReportsPage();
+        }
+
+        function updateUI() {
+            // Totals
+            let income = 0, expense = 0;
+            data.transactions.forEach(t => {
+                const amt = parseFloat(t.amount);
+                if(t.type === 'income') income += amt;
+                else expense += amt;
             });
+            
+            document.getElementById('total-income').innerText = formatMoney(income);
+            document.getElementById('total-expense').innerText = formatMoney(expense);
+            document.getElementById('total-balance').innerText = formatMoney(income - expense);
+
+            // Select Options
+            const sel = document.getElementById('tx-customer-select');
+            // Save current selection if re-rendering
+            const currentVal = sel.value;
+            sel.innerHTML = '<option value="" disabled selected>انتخاب مشتری</option>';
+            data.customers.forEach(c => {
+                sel.innerHTML += `<option value="${c.id}">${c.name}</option>`;
+            });
+            if(currentVal) sel.value = currentVal;
+
+            // Recent (Home Page)
+            const recentList = document.getElementById('recent-transactions');
+            recentList.innerHTML = '';
+            // Clone array, reverse to show newest first, take top 5
+            const recentTx = [...data.transactions].sort((a,b) => new Date(b.date) - new Date(a.date)).slice(0, 5);
+            
+            if(recentTx.length === 0) {
+                recentList.innerHTML = '<div style="text-align:center; color:#555; padding:20px; font-size:12px;">هنوز تراکنشی ثبت نشده است</div>';
+            } else {
+                recentTx.forEach(tx => {
+                    recentList.innerHTML += createTxHTML(tx, false); // false = no delete button in mini view
+                });
+            }
 
             renderChart();
         }
 
-        function renderChart() {
-            const ctx = document.getElementById('financeChart').getContext('2d');
+        // --- HTML GENERATORS ---
+        function createTxHTML(tx, allowDelete = true) {
+            const customer = data.customers.find(c => c.id == tx.customerId)?.name || 'ناشناس';
+            const isInc = tx.type === 'income';
             
-            // داده‌های 7 روز گذشته
-            const labels = [];
-            const dataIn = [];
-            const dataOut = [];
+            const d = new Date(tx.date);
+            // Safe date formatting
+            const dateStr = d.toLocaleDateString('fa-IR') + ' ' + d.toLocaleTimeString('fa-IR', {hour:'2-digit', minute:'2-digit'});
             
-            for(let i=6; i>=0; i--) {
-                const d = new Date();
-                d.setDate(d.getDate() - i);
-                const isoDate = d.toISOString().split('T')[0];
-                labels.push(isoDate.slice(5).replace('-','/')); // ماه/روز
-                
-                let sumIn = 0;
-                let sumOut = 0;
-                
-                // نکته: اینجا تمام ارزها را با هم جمع میکنیم برای نمای کلی گراف.
-                // در برنامه پیشرفته باید تبدیل نرخ ارز داشته باشیم.
-                db.transactions.filter(t => t.date === isoDate).forEach(t => {
-                    if(t.type === 'avard') sumIn += Number(t.amount);
-                    else sumOut += Number(t.amount);
-                });
-                
-                dataIn.push(sumIn);
-                dataOut.push(sumOut);
+            const deleteBtn = allowDelete ? 
+                `<i class="fas fa-trash btn-delete-mini" onclick="deleteTransaction(${tx.id})"></i>` : '';
+
+            return `
+                <div class="tx-item">
+                    <div class="tx-left-group">
+                        <div class="tx-icon ${isInc ? 'in' : 'out'}">
+                            <i class="fas ${isInc ? 'fa-arrow-down' : 'fa-arrow-up'}"></i>
+                        </div>
+                        <div class="tx-info">
+                            <h4>${customer}</h4>
+                            <p>${tx.desc || dateStr}</p>
+                        </div>
+                    </div>
+                    <div class="tx-right-group">
+                        <div class="tx-amount" style="color: ${isInc ? 'var(--accent-green)' : 'var(--accent-red)'}">
+                            ${isInc ? '+' : '-'}${formatMoney(tx.amount)}
+                            <span style="font-size:9px; opacity:0.7">${tx.currency}</span>
+                        </div>
+                    </div>
+                    ${allowDelete ? `<div class="tx-actions">${deleteBtn}</div>` : ''}
+                </div>
+            `;
+        }
+
+        // --- TRANSACTIONS ---
+        function openTxModal(type) {
+            currentTxType = type;
+            document.getElementById('modal-title').innerText = type === 'income' ? 'ثبت دریافتی' : 'ثبت پرداختی';
+            document.getElementById('tx-modal').classList.remove('hidden');
+        }
+
+        function saveTransaction() {
+            const amountStr = document.getElementById('tx-amount').value;
+            const custId = document.getElementById('tx-customer-select').value;
+            const currency = document.getElementById('tx-currency').value;
+            const desc = document.getElementById('tx-desc').value;
+
+            if(!amountStr || !custId) return alert('لطفا مبلغ و مشتری را وارد کنید');
+            
+            const amount = parseFloat(amountStr);
+            if(isNaN(amount)) return alert('مبلغ نامعتبر است');
+
+            const tx = {
+                id: Date.now(),
+                type: currentTxType,
+                amount: amount,
+                currency: currency,
+                customerId: custId,
+                desc: desc,
+                date: new Date().toISOString()
+            };
+
+            data.transactions.push(tx);
+            saveData();
+            
+            // Cleanup
+            document.getElementById('tx-amount').value = '';
+            document.getElementById('tx-desc').value = '';
+            document.getElementById('tx-modal').classList.add('hidden');
+        }
+
+        function deleteTransaction(id) {
+            if(confirm('آیا از حذف این تراکنش اطمینان دارید؟')) {
+                data.transactions = data.transactions.filter(t => t.id !== id);
+                saveData();
+                renderTransactionsPage(); // Re-render list if on that page
+            }
+        }
+
+        function renderTransactionsPage() {
+            const term = document.getElementById('search-tx').value.toLowerCase();
+            const list = document.getElementById('all-transactions');
+            list.innerHTML = '';
+            
+            const filtered = data.transactions.filter(t => {
+                const cName = data.customers.find(c => c.id == t.customerId)?.name || '';
+                return cName.toLowerCase().includes(term) || (t.desc && t.desc.toLowerCase().includes(term));
+            });
+
+            // Show newest first
+            filtered.sort((a,b) => new Date(b.date) - new Date(a.date)).forEach(tx => {
+                list.innerHTML += createTxHTML(tx, true);
+            });
+            
+            if(filtered.length === 0) {
+                 list.innerHTML = '<div style="text-align:center; color:#555; padding:20px;">موردی یافت نشد</div>';
+            }
+        }
+
+        // --- CUSTOMERS ---
+        function addCustomer() {
+            const name = document.getElementById('new-cust-name').value;
+            const phone = document.getElementById('new-cust-phone').value;
+            if(!name) return alert('نام مشتری الزامی است');
+
+            data.customers.push({ id: Date.now(), name, phone });
+            saveData();
+            document.getElementById('new-cust-name').value = '';
+            document.getElementById('new-cust-phone').value = '';
+            renderCustomersPage();
+        }
+
+        function deleteCustomer(id) {
+            // Optional: Check for existing transactions
+            const hasTx = data.transactions.some(t => t.customerId == id);
+            if(hasTx) {
+                if(!confirm('این مشتری دارای تراکنش ثبت شده است. حذف مشتری باعث می‌شود نام او در تراکنش‌ها "ناشناس" شود. ادامه می‌دهید؟')) return;
+            } else {
+                if(!confirm('حذف مشتری؟')) return;
             }
 
-            if(chartInstance) chartInstance.destroy();
+            data.customers = data.customers.filter(c => c.id !== id);
+            saveData();
+            renderCustomersPage();
+        }
 
-            chartInstance = new Chart(ctx, {
-                type: 'bar',
+        function renderCustomersPage() {
+            const list = document.getElementById('customers-list');
+            list.innerHTML = '';
+            data.customers.forEach(c => {
+                const txs = data.transactions.filter(t => t.customerId == c.id);
+                const volume = txs.reduce((sum, t) => sum + parseFloat(t.amount), 0);
+                
+                list.innerHTML += `
+                    <div class="tx-item">
+                        <div class="tx-left-group">
+                            <div class="tx-icon" style="background: rgba(212, 175, 55, 0.1); color: var(--gold-primary);">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <div class="tx-info">
+                                <h4>${c.name}</h4>
+                                <p>${c.phone || '---'}</p>
+                            </div>
+                        </div>
+                        <div class="tx-right-group">
+                            <div class="tx-amount" style="font-size:12px; color:#fff;">${txs.length} تراکنش</div>
+                            <div style="font-size:10px; color:#888;">حجم: ${formatMoney(volume)}</div>
+                        </div>
+                        <div class="tx-actions">
+                             <i class="fas fa-trash btn-delete-mini" onclick="deleteCustomer(${c.id})"></i>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        // --- REPORTS ---
+        let reportChartInstance = null;
+
+        function renderReportsPage() {
+            const filter = document.getElementById('report-filter').value;
+            const now = new Date();
+            let filteredTx = data.transactions.filter(t => {
+                const tDate = new Date(t.date);
+                if (filter === 'month') {
+                    return tDate.getMonth() === now.getMonth() && tDate.getFullYear() === now.getFullYear();
+                } else if (filter === 'last_month') {
+                    // Handle Jan case logic properly
+                    let lastM = now.getMonth() - 1;
+                    let year = now.getFullYear();
+                    if(lastM < 0) { lastM = 11; year--; }
+                    return tDate.getMonth() === lastM && tDate.getFullYear() === year;
+                }
+                return true;
+            });
+
+            let rInc = 0, rExp = 0;
+            const custMap = {};
+
+            filteredTx.forEach(t => {
+                const amt = parseFloat(t.amount);
+                if(t.type === 'income') rInc += amt;
+                else rExp += amt;
+
+                // Top Customer Logic
+                if(!custMap[t.customerId]) custMap[t.customerId] = 0;
+                custMap[t.customerId] += amt;
+            });
+
+            // Update UI
+            document.getElementById('rep-inc').innerText = formatMoney(rInc);
+            document.getElementById('rep-exp').innerText = formatMoney(rExp);
+            const net = rInc - rExp;
+            document.getElementById('rep-net').innerText = formatMoney(net);
+            document.getElementById('rep-net').style.color = net >= 0 ? '#2ecc71' : '#e74c3c';
+
+            // Report Chart
+            const ctx = document.getElementById('reportPieChart');
+            if(reportChartInstance) reportChartInstance.destroy();
+            
+            // Prevent chart error if no data
+            if (rInc === 0 && rExp === 0) {
+                 // Clean canvas or show placeholder?
+                 // Chart.js handles 0 data gracefully usually, but let's be safe
+            }
+
+            reportChartInstance = new Chart(ctx, {
+                type: 'doughnut',
                 data: {
-                    labels: labels,
-                    datasets: [
-                        { label: 'ورودی', data: dataIn, backgroundColor: '#00e676', borderRadius: 4 },
-                        { label: 'خروجی', data: dataOut, backgroundColor: '#ff4d4d', borderRadius: 4 }
-                    ]
+                    labels: ['دریافتی', 'پرداختی'],
+                    datasets: [{
+                        data: [rInc, rExp],
+                        backgroundColor: ['#2ecc71', '#e74c3c'],
+                        borderWidth: 0
+                    }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    plugins: { legend: { labels: { color: '#999', font:{family:'Vazirmatn'} } } },
+                    plugins: {
+                        legend: { position: 'bottom', labels: { color: '#fff', font: {family:'Vazirmatn'} } }
+                    }
+                }
+            });
+
+            // Top Customers List
+            const topList = document.getElementById('top-customers-list');
+            topList.innerHTML = '';
+            const sortedCusts = Object.keys(custMap).sort((a,b) => custMap[b] - custMap[a]).slice(0, 5);
+            
+            sortedCusts.forEach(cid => {
+                const cName = data.customers.find(c => c.id == cid)?.name || 'ناشناس';
+                topList.innerHTML += `
+                    <div style="display:flex; justify-content:space-between; padding:10px; border-bottom:1px solid rgba(255,255,255,0.05)">
+                        <span style="color:#ddd">${cName}</span>
+                        <span style="color:var(--gold-primary)">${formatMoney(custMap[cid])}</span>
+                    </div>
+                `;
+            });
+        }
+
+        // --- CHART (HOME) ---
+        let mainChartInstance = null;
+        function renderChart() {
+            const ctx = document.getElementById('mainChart');
+            if(!ctx) return;
+            
+            const sorted = [...data.transactions].sort((a,b) => new Date(a.date) - new Date(b.date));
+            
+            let balance = 0;
+            const labels = [];
+            const dataPoints = [];
+            
+            // Initial point
+            labels.push('');
+            dataPoints.push(0);
+
+            sorted.forEach(t => {
+                if(t.type === 'income') balance += parseFloat(t.amount);
+                else balance -= parseFloat(t.amount);
+                
+                labels.push('');
+                dataPoints.push(balance);
+            });
+
+            const limit = 20;
+            // Ensure array length consistency
+            const finalData = dataPoints.slice(-limit);
+            const finalLabels = labels.slice(-limit);
+
+            if(mainChartInstance) mainChartInstance.destroy();
+
+            mainChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: finalLabels,
+                    datasets: [{
+                        label: 'موجودی',
+                        data: finalData,
+                        borderColor: '#D4AF37',
+                        backgroundColor: (context) => {
+                            const ctx = context.chart.ctx;
+                            const gradient = ctx.createLinearGradient(0, 0, 0, 200);
+                            gradient.addColorStop(0, "rgba(212, 175, 55, 0.4)");
+                            gradient.addColorStop(1, "rgba(212, 175, 55, 0)");
+                            return gradient;
+                        },
+                        borderWidth: 2,
+                        tension: 0.4,
+                        fill: true,
+                        pointRadius: 3,
+                        pointBackgroundColor: '#fff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
                     scales: {
-                        y: { ticks: { color: '#555' }, grid: { color: 'rgba(255,255,255,0.05)' } },
-                        x: { ticks: { color: '#777' }, grid: { display: false } }
+                        x: { display: false },
+                        y: { display: false }
+                    },
+                    interaction: {
+                        intersect: false,
+                        mode: 'index',
                     }
                 }
             });
         }
 
-        // --- Transaction Logic ---
-        function setTxType(t){
-            currentTxType = t;
-            const btnA = document.getElementById('btn-type-avard');
-            const btnB = document.getElementById('btn-type-bord');
-            if(t==='avard'){
-                btnA.style.color='var(--success)'; btnA.style.border='1px solid var(--success)';
-                btnB.style.color='#666'; btnB.style.border='none';
-            } else {
-                btnB.style.color='var(--danger)'; btnB.style.border='1px solid var(--danger)';
-                btnA.style.color='#666'; btnA.style.border='none';
-            }
-        }
-        setTxType('bord');
-
-        function saveTransaction(){
-            const id = document.getElementById('edit-tx-id').value;
-            const cid = document.getElementById('tx-customer').value;
-            const amt = document.getElementById('tx-amount').value;
-            const cur = document.getElementById('tx-curr').value;
-            const desc = document.getElementById('tx-desc').value;
-            const date = document.getElementById('tx-date').value || new Date().toISOString().split('T')[0];
-
-            if(!cid || !amt){ showToast('اطلاعات ناقص است', 'error'); return; }
-
-            const txObj = {
-                id: id ? Number(id) : Date.now(),
-                serial: Math.floor(1000 + Math.random() * 9000),
-                customerId: cid,
-                type: currentTxType,
-                amount: Number(amt),
-                currency: cur,
-                desc: desc,
-                date: date
-            };
-
-            if(id){
-                const idx = db.transactions.findIndex(x => x.id == id);
-                if(idx > -1) db.transactions[idx] = txObj;
-            } else {
-                db.transactions.unshift(txObj);
-            }
+        // --- EXPORT ---
+        function exportExcel() {
+            const wb = XLSX.utils.book_new();
             
-            saveData();
-            showToast('سند ثبت شد');
-            cancelEditMode();
-            renderHome();
+            const txData = data.transactions.map(t => ({
+                تاریخ: new Date(t.date).toLocaleDateString('fa-IR'),
+                نوع: t.type === 'income' ? 'دریافت' : 'پرداخت',
+                مبلغ: t.amount,
+                ارز: t.currency,
+                مشتری: data.customers.find(c => c.id == t.customerId)?.name || 'ناشناس',
+                توضیحات: t.desc
+            }));
+            const ws = XLSX.utils.json_to_sheet(txData);
+            XLSX.utils.book_append_sheet(wb, ws, "Transactions");
+            XLSX.writeFile(wb, "Khademe_Report.xlsx");
         }
 
-        function deleteTransaction(id){
-            if(confirm("آیا مطمئن هستید که حذف شود؟")){
-                db.transactions = db.transactions.filter(t => t.id != id);
-                saveData();
-                renderHome();
-                showToast('حذف شد');
-            }
+        // --- CLOUD SYNC ---
+        async function syncUpload() {
+            if (!db) return alert("تنظیمات Firebase انجام نشده است.");
+            if(!confirm("آپلود روی اطلاعات قبلی سرور بازنویسی میشود. ادامه میدهید؟")) return;
+
+            const btn = event.currentTarget;
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ...';
+            try {
+                await db.collection('backups').doc('main_db').set(data);
+                alert("✅ ذخیره شد.");
+            } catch (e) { alert("❌ خطا: " + e.message); }
+            btn.innerHTML = originalText;
         }
 
-        function prepareAddTransaction(){
-            cancelEditMode();
-            document.getElementById('tx-date').value = new Date().toISOString().split('T')[0];
-            switchPage('add-page', document.querySelector('.add-btn'));
-        }
+        async function syncDownload() {
+            if (!db) return alert("تنظیمات Firebase انجام نشده است.");
+            if(!confirm("اطلاعات فعلی دستگاه شما حذف و با نسخه سرور جایگزین میشود. ادامه میدهید؟")) return;
 
-        function cancelEditMode(){
-            document.getElementById('edit-tx-id').value = '';
-            document.getElementById('tx-amount').value = '';
-            document.getElementById('tx-desc').value = '';
-            document.getElementById('tx-customer').value = '';
-            document.getElementById('add-page-title').innerText = 'تراکنش جدید';
-            document.getElementById('btn-cancel-edit').style.display = 'none';
-            setTxType('bord');
-        }
-
-        // --- Customer Logic ---
-        function renderCustomers(){
-            const l = document.getElementById('customers-list');
-            const search = document.getElementById('search-customer').value.toLowerCase();
-            l.innerHTML = '';
-            
-            db.customers.forEach(c => {
-                if(c.name.toLowerCase().includes(search)){
-                    // محاسبه مانده حساب (تخمین کلی یا بر اساس ارز پایه)
-                    // اینجا صرفاً تعداد تراکنش را نشان می‌دهیم تا پیچیده نشود
-                    const txCount = db.transactions.filter(t => t.customerId === c.id).length;
-                    
-                    l.innerHTML += `
-                        <div class="card list-item">
-                            <div class="flex-row" style="width:100%;">
-                                <div class="avatar"><i class="fa fa-user"></i></div>
-                                <div>
-                                    <div style="font-weight:bold;">${c.name}</div>
-                                    <div style="font-size:0.75rem; color:#666;">${c.phone||'-'}</div>
-                                </div>
-                            </div>
-                            <div style="text-align:end;">
-                                <div style="font-size:0.8rem; color:var(--gold);">${txCount} تراکنش</div>
-                                <div style="display:flex; gap:15px; justify-content:flex-end; margin-top:10px;">
-                                    <i class="fa fa-pen" style="color:#666" onclick="openCustomerModal('${c.id}')"></i>
-                                    <i class="fa fa-trash" style="color:var(--danger)" onclick="deleteCustomer('${c.id}')"></i>
-                                </div>
-                            </div>
-                        </div>`;
-                }
-            });
-        }
-
-        function openCustomerModal(id=null){
-            document.getElementById('customer-modal').style.display = 'flex';
-            document.getElementById('cust-id').value = id || '';
-            if(id){
-                const c = db.customers.find(x => x.id === id);
-                document.getElementById('cust-name').value = c.name;
-                document.getElementById('cust-phone').value = c.phone;
-                document.getElementById('cust-desc').value = c.info;
-            } else {
-                document.getElementById('cust-name').value = '';
-                document.getElementById('cust-phone').value = '';
-                document.getElementById('cust-desc').value = '';
-            }
-        }
-        function closeCustomerModal(){ document.getElementById('customer-modal').style.display = 'none'; }
-        
-        function saveCustomer(){
-            const id = document.getElementById('cust-id').value;
-            const name = document.getElementById('cust-name').value;
-            if(!name) return showToast('نام الزامی است', 'error');
-            
-            const obj = {
-                id: id || 'c'+Date.now(),
-                name: name,
-                phone: document.getElementById('cust-phone').value,
-                info: document.getElementById('cust-desc').value
-            };
-            
-            if(id){
-                const idx = db.customers.findIndex(c => c.id === id);
-                db.customers[idx] = obj;
-            } else {
-                db.customers.push(obj);
-            }
-            saveData();
-            closeCustomerModal();
-            renderCustomers();
-            populateCustomerSelects();
-            showToast('مشتری ذخیره شد');
-        }
-
-        function deleteCustomer(id){
-            if(confirm('حذف شود؟')){
-                if(db.transactions.some(t => t.customerId === id)){
-                    return showToast('این مشتری تراکنش دارد و حذف نمیشود', 'error');
-                }
-                db.customers = db.customers.filter(c => c.id !== id);
-                saveData();
-                renderCustomers();
-                populateCustomerSelects();
-            }
-        }
-
-        function populateCustomerSelects(){
-            const opts = `<option value="">انتخاب...</option>` + db.customers.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
-            document.getElementById('tx-customer').innerHTML = opts;
-            document.getElementById('report-customer').innerHTML = `<option value="all">همه حساب‌ها</option>` + db.customers.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
-        }
-
-        // --- General & Utils ---
-        function switchPage(pid, el){
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.getElementById(pid).classList.add('active');
-            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-            if(el && !el.classList.contains('add-btn')) el.classList.add('active');
-            
-            if(pid === 'home-page') renderHome();
-            if(pid === 'customers-page') renderCustomers();
-        }
-
-        function checkLogin(){
-            const input = document.getElementById('login-pin').value;
-            if(!db.settings.pin || input === db.settings.pin){
-                document.getElementById('login-screen').style.display = 'none';
-                init();
-            } else {
-                document.getElementById('pin-error').style.display = 'block';
-            }
-        }
-
-        function updatePin(v){ db.settings.pin = v; saveData(); showToast('رمز تغییر کرد'); }
-        function logout(){ location.reload(); }
-        
-        function syncToCloudManual(){ saveData(); } // This triggers the saveToCloud via saveData
-
-        function showReceiptModal(txId){
-            let tx;
-            if(typeof txId === 'object') tx = txId; // اگر آبجکت پاس داده شد
-            else tx = db.transactions.find(t => t.id == txId);
-            
-            if(!tx) return;
-            const c = db.customers.find(x => x.id == tx.customerId);
-            
-            document.getElementById('rec-id').innerText = tx.serial || '---';
-            document.getElementById('rec-date').innerText = tx.date;
-            document.getElementById('rec-name').innerText = c ? c.name : '---';
-            document.getElementById('rec-type').innerText = tx.type==='bord'?'سند پرداخت':'سند دریافت';
-            document.getElementById('rec-amount').innerText = Number(tx.amount).toLocaleString();
-            document.getElementById('rec-curr').innerText = tx.currency;
-            document.getElementById('rec-desc').innerText = tx.desc;
-            document.getElementById('receipt-modal').style.display = 'flex';
-        }
-
-        function downloadReceipt(){
-            html2canvas(document.getElementById('receipt-capture-area'), {scale:2}).then(c => {
-                const a = document.createElement('a');
-                a.download = 'receipt.png'; a.href = c.toDataURL(); a.click();
-            });
-        }
-
-        function exportToExcel(){
-            // اضافه کردن BOM برای پشتیبانی از فارسی در اکسل
-            let csvContent = "\uFEFFID,Date,Customer,Currency,Type,Amount,Description\n";
-            
-            const cid = document.getElementById('report-customer').value;
-            const fromD = document.getElementById('filter-date-from').value;
-            const toD = document.getElementById('filter-date-to').value;
-            
-            let data = db.transactions;
-            if(cid !== 'all') data = data.filter(t => t.customerId === cid);
-            if(fromD) data = data.filter(t => t.date >= fromD);
-            if(toD) data = data.filter(t => t.date <= toD);
-
-            data.forEach(t => {
-                const c = db.customers.find(x => x.id === t.customerId);
-                const type = t.type === 'avard' ? 'دریافت' : 'پرداخت';
-                csvContent += `${t.serial},${t.date},${c?c.name:'-'},${t.currency},${type},${t.amount},${t.desc}\n`;
-            });
-
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement("a");
-            link.href = URL.createObjectURL(blob);
-            link.download = "khademe_export.csv";
-            document.body.appendChild(link);
-            link.click();
-            link.remove();
-        }
-
-        function printReport(){
-            // گزارش ساده برای پرینت
-            generateReportPreview();
-            const content = document.getElementById('report-preview').innerHTML;
-            const originalBody = document.body.innerHTML;
-            document.body.innerHTML = `<div style="padding:20px; direction:rtl; font-family:tahoma;">${content}</div>`;
-            window.print();
-            location.reload(); 
-        }
-
-        function generateReportPreview(){
-            const prev = document.getElementById('report-preview');
-            prev.style.display = 'block';
-            
-            const cid = document.getElementById('report-customer').value;
-            const fromD = document.getElementById('filter-date-from').value;
-            const toD = document.getElementById('filter-date-to').value;
-            
-            let data = db.transactions;
-            if(cid !== 'all') data = data.filter(t => t.customerId === cid);
-            if(fromD) data = data.filter(t => t.date >= fromD);
-            if(toD) data = data.filter(t => t.date <= toD);
-
-            let html = `<table style="width:100%; border-collapse:collapse; font-size:0.8rem;">
-                <tr style="background:#eee; color:#000;"><th style="padding:8px;">تاریخ</th><th>شرح</th><th>ارز</th><th>مبلغ</th></tr>`;
-            
-            data.forEach(t => {
-                const color = t.type==='avard'?'green':'red';
-                html += `<tr style="border-bottom:1px solid #ddd;">
-                    <td style="padding:8px;">${t.date}</td>
-                    <td>${t.desc}</td>
-                    <td>${t.currency}</td>
-                    <td style="color:${color}; direction:ltr; font-weight:bold;">${Number(t.amount).toLocaleString()}</td>
-                </tr>`;
-            });
-            prev.innerHTML = html + "</table>";
-        }
-
-        function backupData(){
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db));
-            const node = document.createElement('a');
-            node.setAttribute("href", dataStr);
-            node.setAttribute("download", "khademe_backup_" + new Date().toISOString().slice(0,10) + ".json");
-            document.body.appendChild(node); node.click(); node.remove();
-        }
-
-        function restoreData(input){
-            const file = input.files[0];
-            const reader = new FileReader();
-            reader.onload = function(e){
-                try {
-                    db = JSON.parse(e.target.result);
+            const btn = event.currentTarget;
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ...';
+            try {
+                const doc = await db.collection('backups').doc('main_db').get();
+                if (doc.exists) {
+                    data = doc.data();
                     saveData();
-                    alert("بازگردانی انجام شد");
+                    alert("✅ بازیابی شد.");
                     location.reload();
-                } catch(err) { alert("فایل نامعتبر است"); }
-            };
-            reader.readAsText(file);
+                } else alert("⚠️ فایلی یافت نشد.");
+            } catch (e) { alert("❌ خطا: " + e.message); }
+            btn.innerHTML = originalText;
         }
 
-        // بررسی لاگین در شروع
-        document.addEventListener("DOMContentLoaded", () => {
-             const s = localStorage.getItem('khademeGoldUltra');
-             if(s){
-                 const d = JSON.parse(s);
-                 if(d.settings && d.settings.pin && d.settings.pin.length > 0) return; // Wait for login
-             }
-             document.getElementById('login-screen').style.display = 'none';
-             init();
-        });
-
+        // --- LANG ---
+        function toggleLang() {
+            const html = document.documentElement;
+            html.lang = html.lang === 'fa' ? 'en' : 'fa';
+            html.dir = html.lang === 'fa' ? 'rtl' : 'ltr';
+            
+            const dict = {
+                'fa': { 'home': 'خانه', 'transactions': 'کیف پول', 'customers': 'مشتریان', 'settings': 'تنظیمات', 'reports': 'گزارشات', 'income': 'دریافتی', 'expense': 'پرداختی', 'recent': 'تراکنش‌های اخیر', 'total-balance': 'موجودی کل' },
+                'en': { 'home': 'Home', 'transactions': 'Wallet', 'customers': 'Customers', 'settings': 'Settings', 'reports': 'Reports', 'income': 'Income', 'expense': 'Expense', 'recent': 'Recent Tx', 'total-balance': 'Total Balance' }
+            };
+            
+            document.querySelectorAll('[data-key]').forEach(el => {
+                const k = el.getAttribute('data-key');
+                if(dict[html.lang][k]) el.innerText = dict[html.lang][k];
+            });
+        }
     </script>
 </body>
 </html>
