@@ -181,8 +181,8 @@
         }
 /* --- استایل‌های جدید و استاندارد برای صورت‌حساب --- */
 .statement-paper {
-    background: #fff;
-    color: #000;
+    background: var(--bg-card); /* تغییر به رنگ پس‌زمینه کارت */
+    color: var(--text-main);    /* تغییر به رنگ متن اصلی */
     padding: 0;
     border-radius: 4px;
     overflow: hidden;
@@ -197,26 +197,26 @@
     direction: rtl;
 }
 .std-table th {
-    background-color: #f0f0f0;
-    color: #333;
+    background-color: rgba(255,255,255,0.05); /* تغییر هدر جدول به تیره */
+    color: var(--gold-primary);
     font-weight: bold;
     padding: 10px;
-    border: 1px solid #ddd;
+    border: 1px solid #333;
     text-align: center;
 }
 .std-table td {
     padding: 8px;
-    border: 1px solid #ddd;
+    border: 1px solid #333; /* خطوط جدول تیره */
     text-align: center;
-    color: #333;
+    color: #fff;
 }
 .std-table td.amount-col {
     direction: ltr;
     font-family: 'Inter', sans-serif;
     font-weight: 600;
 }
-.text-green { color: #16a085 !important; }
-.text-red { color: #c0392b !important; }
+.text-green { color: #2ecc71 !important; }
+.text-red { color: #e74c3c !important; }
 
 /* بخش هدر صورت‌حساب */
 .invoice-header {
@@ -228,21 +228,27 @@
     margin-bottom: 20px;
 }
 .invoice-info { text-align: right; }
-.invoice-logo { font-family: 'Playfair Display'; font-size: 24px; color: #000; font-weight: bold; }
+.invoice-logo { font-family: 'Playfair Display'; font-size: 24px; color: var(--gold-primary); font-weight: bold; }
 
 /* نمایش در موبایل (کارت‌ها) */
 .mobile-statement-list { display: block; }
 .desktop-print-view { display: none; }
 
 @media print {
-    body { background: white; padding: 0; margin: 0; }
+    body { background: white !important; padding: 0; margin: 0; color: black !important; }
     .app-container { max-width: 100%; margin: 0; padding: 0; opacity: 1; }
     .no-print, .bottom-nav, header, #login-overlay { display: none !important; }
     
     .page { display: none !important; }
-    #statement-page { display: block !important; position: absolute; top: 0; left: 0; width: 100%; z-index: 9999; padding: 10mm; }
+    #statement-page { display: block !important; position: absolute; top: 0; left: 0; width: 100%; z-index: 9999; padding: 10mm; background: white !important; }
     
-    .lux-card { box-shadow: none; border: none; padding: 0; margin: 0; background: #fff; }
+    .statement-paper { background: white !important; color: black !important; border: none; }
+    .lux-card { box-shadow: none; border: none; padding: 0; margin: 0; background: #fff !important; }
+    
+    .std-table th { background-color: #eee !important; color: #000 !important; border: 1px solid #000 !important; }
+    .std-table td { border: 1px solid #000 !important; color: #000 !important; }
+    
+    .invoice-logo { color: #000 !important; }
     
     /* مخفی کردن نمای موبایل و نمایش جدول رسمی در پرینت */
     .mobile-statement-list { display: none; }
@@ -331,41 +337,58 @@
                 <div class="tx-list" id="customers-list"></div>
             </div>
         </div>
+<div id="statement-page" class="page">
+    <div class="lux-card statement-paper">
+        <div class="no-print" style="margin-bottom: 20px; display: flex; gap: 10px;">
+            <button class="btn-outline" onclick="navigate('customers')" style="width: auto;">
+                <i class="fas fa-arrow-right"></i> <span data-lang="back">بازگشت</span>
+            </button>
+            <button class="btn-gold" onclick="window.print()" style="width: auto; flex:1;">
+                <i class="fas fa-print"></i> <span data-lang="print">چاپ / PDF استاندارد</span>
+            </button>
+        </div>
 
-        <div id="statement-page" class="page">
-            <div class="lux-card statement-card">
-                <div class="no-print" style="margin-bottom: 15px;">
-                    <button class="btn-outline" onclick="navigate('customers')" style="width: auto; display: inline-flex;">
-                        <i class="fas fa-arrow-right"></i> <span data-lang="back">بازگشت</span>
-                    </button>
-                    <button class="btn-outline" onclick="window.print()" style="width: auto; float: left; border-color: var(--gold-primary);">
-                        <i class="fas fa-print"></i> <span data-lang="print">چاپ صورت‌حساب</span>
-                    </button>
-                </div>
-
-                <div class="statement-header" style="text-align: center; margin-bottom: 20px;">
-                    <h2 id="stmt-name" style="font-family: 'Vazirmatn'; color: var(--gold-primary);">---</h2>
-                    <p id="stmt-phone" style="color: #888; font-size: 12px;">---</p>
-                    <p id="stmt-date" style="color: #888; font-size: 10px; margin-top: 5px;">---</p>
-                </div>
-
-                <div id="stmt-summary" style="display: flex; gap: 10px; margin-bottom: 20px; justify-content: center;"></div>
-
-                <div class="tx-list no-print" id="stmt-tx-list"></div>
-
-                <table class="statement-table" style="display: none;"> <thead>
-                        <tr>
-                            <th data-lang="date">تاریخ</th>
-                            <th data-lang="desc">توضیحات</th>
-                            <th data-lang="country_curr">کشور/ارز</th>
-                            <th data-lang="type">نوع</th>
-                            <th data-lang="amount">مبلغ</th>
-                        </tr>
-                    </thead>
-                    <tbody id="stmt-table-body"></tbody>
-                </table>
+        <div class="invoice-header">
+            <div class="invoice-info">
+                <h2 id="stmt-name" style="color:var(--gold-primary); margin-bottom:5px;">---</h2>
+                <p id="stmt-phone" style="color: #666; font-size: 13px;">---</p>
+            </div>
+            <div style="text-align: left;">
+                <div class="invoice-logo">KHADEME</div>
+                <div id="stmt-date" style="color: #666; font-size: 11px; margin-top: 5px;">---</div>
             </div>
         </div>
+
+        <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 15px; margin-bottom: 20px;">
+    <h4 style="color:#aaa; margin-bottom:10px; font-size:12px; border-bottom:1px solid #333; padding-bottom:5px;">خلاصه وضعیت (تراز نهایی)</h4>
+            <h4 style="color:#444; margin-bottom:10px; font-size:12px; border-bottom:1px solid #ddd; padding-bottom:5px;">خلاصه وضعیت (تراز نهایی)</h4>
+            <div id="stmt-summary" style="display: flex; gap: 15px; flex-wrap: wrap; justify-content: center;"></div>
+        </div>
+
+        <div class="mobile-statement-list tx-list no-print" id="stmt-tx-list"></div>
+
+        <div class="desktop-print-view">
+            <table class="std-table">
+                <thead>
+                    <tr>
+                        <th style="width: 15%;">تاریخ</th>
+                        <th>شرح / بابت</th>
+                        <th style="width: 10%;">ارز</th>
+                        <th style="width: 15%; color:#2ecc71;">دریافت (بدهکار)</th>
+                        <th style="width: 15%; color:#e74c3c;">پرداخت (بستانکار)</th>
+                    </tr>
+                </thead>
+                <tbody id="stmt-table-body">
+                    </tbody>
+            </table>
+            
+            <div style="margin-top: 30px; border-top: 1px solid #000; padding-top: 10px; display:flex; justify-content:space-between;">
+                <div style="font-size:10px; text-align:center;">امضاء حسابدار</div>
+                <div style="font-size:10px; text-align:center;">امضاء طرف حساب</div>
+            </div>
+        </div>
+    </div>
+</div>
 
         <div id="reports-page" class="page">
             <div class="lux-card">
@@ -843,56 +866,80 @@
         }
 
         function openCustomerStatement(custId) {
-            const customer = data.customers.find(c => c.id == custId);
-            if(!customer) return;
+    const customer = data.customers.find(c => c.id == custId);
+    if(!customer) return;
 
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.getElementById('statement-page').classList.add('active');
-            
-            document.getElementById('stmt-name').innerText = customer.name;
-            document.getElementById('stmt-phone').innerText = customer.phone || '---';
-            document.getElementById('stmt-date').innerText = lang[currentLang].date + ': ' + new Date().toLocaleDateString(currentLang === 'fa' ? 'fa-IR' : 'en-US');
+    // تغییر صفحه فعال
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById('statement-page').classList.add('active');
+    
+    // پر کردن هدر
+    document.getElementById('stmt-name').innerText = customer.name;
+    document.getElementById('stmt-name').style.color = 'var(--gold-primary)'; // اصلاح رنگ نام
+    document.getElementById('stmt-phone').innerText = customer.phone || '---';
+    const dateStr = new Date().toLocaleDateString(currentLang === 'fa' ? 'fa-IR' : 'en-US');
+    document.getElementById('stmt-date').innerText = `${lang[currentLang].date}: ${dateStr}`;
 
-            const txs = data.transactions.filter(t => t.customerId == custId).sort((a,b) => new Date(b.date) - new Date(a.date));
+    // فیلتر کردن تراکنش‌های این مشتری
+    const txs = data.transactions.filter(t => t.customerId == custId).sort((a,b) => new Date(b.date) - new Date(a.date));
 
-            const balances = {};
-            txs.forEach(t => {
-                if(!balances[t.currency]) balances[t.currency] = 0;
-                if(t.type === 'income') balances[t.currency] += parseFloat(t.amount);
-                else balances[t.currency] -= parseFloat(t.amount);
-            });
+    // محاسبه ترازها
+    const balances = {};
+    txs.forEach(t => {
+        if(!balances[t.currency]) balances[t.currency] = 0;
+        if(t.type === 'income') balances[t.currency] += parseFloat(t.amount); 
+        else balances[t.currency] -= parseFloat(t.amount); 
+    });
 
-            const summaryDiv = document.getElementById('stmt-summary');
-            summaryDiv.innerHTML = '';
-            for(const [curr, amt] of Object.entries(balances)) {
-                summaryDiv.innerHTML += `
-                    <div style="background:rgba(212,175,55,0.1); padding:10px; border-radius:10px; text-align:center; min-width:80px; border:1px solid rgba(212,175,55,0.3);">
-                        <div style="font-size:10px; color:#aaa;">${lang[currentLang].balance} ${curr}</div>
-                        <div style="font-weight:bold; color:${amt >=0 ? '#2ecc71':'#e74c3c'}; direction:ltr;">${formatMoney(amt)}</div>
+    // نمایش خلاصه حساب (Summary) با استایل تیره
+    const summaryDiv = document.getElementById('stmt-summary');
+    summaryDiv.innerHTML = '';
+    const hasBal = Object.keys(balances).length > 0;
+    
+    if(!hasBal) {
+        summaryDiv.innerHTML = `<span style="color:#666; font-size:12px;">تراکنشی یافت نشد.</span>`;
+    } else {
+        for(const [curr, amt] of Object.entries(balances)) {
+            const color = amt >= 0 ? '#2ecc71' : '#e74c3c'; // رنگ‌های روشن‌تر برای پس‌زمینه مشکی
+            // اصلاح رنگ پس‌زمینه باکس‌های خلاصه
+            summaryDiv.innerHTML += `
+                <div style="background:rgba(255,255,255,0.05); padding:5px 15px; border:1px solid rgba(255,255,255,0.1); border-radius:6px; min-width:100px; text-align:center;">
+                    <div style="font-size:11px; color:#aaa;">${curr}</div>
+                    <div style="font-weight:bold; color:${color}; direction:ltr; font-size:14px;">
+                        ${formatMoney(Math.abs(amt))} <span style="font-size:10px;">${amt < 0 ? '(بستانکار)' : '(بدهکار)'}</span>
                     </div>
-                `;
-            }
-
-            const webList = document.getElementById('stmt-tx-list');
-            webList.innerHTML = '';
-            txs.forEach(tx => webList.innerHTML += createTxHTML(tx));
-
-            const tableBody = document.getElementById('stmt-table-body');
-            tableBody.innerHTML = '';
-            txs.forEach(tx => {
-                const typeText = tx.type === 'income' ? lang[currentLang].income : lang[currentLang].expense;
-                tableBody.innerHTML += `
-                    <tr>
-                        <td>${new Date(tx.date).toLocaleDateString(currentLang === 'fa' ? 'fa-IR' : 'en-US')}</td>
-                        <td>${tx.desc || '-'}</td>
-                        <td>${tx.country} / ${tx.currency}</td>
-                        <td>${typeText}</td>
-                        <td style="direction:ltr">${formatMoney(tx.amount)}</td>
-                    </tr>
-                `;
-            });
+                </div>
+            `;
         }
+    }
 
+    // 1. پر کردن نمای موبایل (کارت‌ها)
+    const mobileList = document.getElementById('stmt-tx-list');
+    mobileList.innerHTML = '';
+    txs.forEach(tx => mobileList.innerHTML += createTxHTML(tx));
+
+    // 2. پر کردن جدول رسمی (برای پرینت)
+    const tableBody = document.getElementById('stmt-table-body');
+    tableBody.innerHTML = '';
+    
+    txs.forEach(tx => {
+        const isInc = tx.type === 'income';
+        const dateFormatted = new Date(tx.date).toLocaleDateString(currentLang === 'fa' ? 'fa-IR' : 'en-US');
+        
+        const incCol = isInc ? formatMoney(tx.amount) : '-';
+        const expCol = !isInc ? formatMoney(tx.amount) : '-';
+
+        tableBody.innerHTML += `
+            <tr>
+                <td>${dateFormatted}</td>
+                <td style="text-align: right; font-size:11px;">${tx.desc || 'بدون توضیحات'}</td>
+                <td>${tx.currency}</td>
+                <td class="amount-col ${isInc ? 'text-green' : ''}">${incCol}</td>
+                <td class="amount-col ${!isInc ? 'text-red' : ''}">${expCol}</td>
+            </tr>
+        `;
+    });
+}
         function renderReportsPage() {
             const filterType = document.getElementById('report-filter-type').value; 
             
