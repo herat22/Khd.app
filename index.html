@@ -6,7 +6,7 @@
     <meta name="theme-color" content="#050505">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>KHADEME | Financial Suite</title>
+    <title>KHADEME | Multi-Country Suite</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@200;400;600;800&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -49,7 +49,7 @@
             background-image: 
                 radial-gradient(circle at 10% 20%, rgba(212, 175, 55, 0.04) 0%, transparent 40%),
                 radial-gradient(circle at 90% 80%, rgba(212, 175, 55, 0.04) 0%, transparent 40%);
-            padding-bottom: 100px; /* Increased for better scroll on mobile */
+            padding-bottom: 100px;
         }
 
         /* Typography */
@@ -81,7 +81,6 @@
             transition: all 0.3s ease; backdrop-filter: blur(10px);
         }
         .icon-btn:active { transform: scale(0.95); background: rgba(212, 175, 55, 0.1); }
-        .icon-btn.danger { color: var(--accent-red); border-color: rgba(231, 76, 60, 0.3); }
 
         /* Cards */
         .lux-card {
@@ -166,18 +165,17 @@
         
         .tx-info { overflow: hidden; }
         .tx-info h4 { font-size: 15px; margin-bottom: 4px; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .tx-info p { font-size: 12px; color: var(--text-sec); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .tx-info p { font-size: 12px; color: var(--text-sec); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display:flex; align-items:center; gap:5px;}
         
         .tx-right-group { text-align: left; margin-right: 10px; display: flex; flex-direction: column; align-items: flex-end;}
         .tx-amount { font-family: 'Inter', sans-serif; font-weight: 600; white-space: nowrap; }
         
-        .tx-actions {
-            display: flex; gap: 10px; align-items: center; margin-right: 10px;
-        }
-        .btn-delete-mini {
-            color: #555; cursor: pointer; font-size: 14px; padding: 5px; transition: 0.2s;
-        }
+        .tx-actions { display: flex; gap: 10px; align-items: center; margin-right: 10px; }
+        .btn-delete-mini { color: #555; cursor: pointer; font-size: 14px; padding: 5px; transition: 0.2s; }
         .btn-delete-mini:hover { color: var(--accent-red); }
+
+        /* Country Tags */
+        .tag-country { font-size: 10px; padding: 2px 6px; border-radius: 4px; background: rgba(255,255,255,0.1); margin-right: 5px; }
 
         /* Loader */
         #loader {
@@ -221,7 +219,7 @@
 
         <div id="home-page" class="page active">
             <div class="lux-card balance-hero">
-                <div class="balance-label" data-key="total-balance">موجودی کل</div>
+                <div class="balance-label" data-key="total-balance">موجودی کل (تخمینی)</div>
                 <div class="balance-amount" id="total-balance">0</div>
                 <div class="stats-row">
                     <div class="stat-item">
@@ -259,7 +257,7 @@
             <div class="lux-card">
                 <h2 style="margin-bottom: 15px; color: var(--gold-primary);" data-key="transactions">تراکنش‌ها</h2>
                 <div class="form-group">
-                    <input type="text" id="search-tx" placeholder="جستجو (نام مشتری، توضیحات)..." onkeyup="renderTransactionsPage()">
+                    <input type="text" id="search-tx" placeholder="جستجو (کشور، مشتری، توضیحات)..." onkeyup="renderTransactionsPage()">
                 </div>
             </div>
             <div class="tx-list" id="all-transactions"></div>
@@ -268,13 +266,13 @@
         <div id="customers-page" class="page">
             <div class="lux-card">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-                    <h2 style="color: var(--gold-primary);" data-key="customers">مشتریان</h2>
+                    <h2 style="color: var(--gold-primary);" data-key="customers">اشخاص/خانواده</h2>
                     <button class="icon-btn" onclick="document.getElementById('add-customer-area').classList.toggle('hidden')"><i class="fas fa-plus"></i></button>
                 </div>
                 
                 <div id="add-customer-area" class="hidden" style="margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px;">
-                    <input type="text" id="new-cust-name" placeholder="نام مشتری">
-                    <input type="tel" id="new-cust-phone" placeholder="شماره تماس">
+                    <input type="text" id="new-cust-name" placeholder="نام شخص / عضو خانواده">
+                    <input type="tel" id="new-cust-phone" placeholder="شماره تماس (اختیاری)">
                     <button class="btn-gold" onclick="addCustomer()">افزودن</button>
                 </div>
 
@@ -284,7 +282,7 @@
 
         <div id="reports-page" class="page">
             <div class="lux-card">
-                <h2 style="margin-bottom: 20px; color: var(--gold-primary);" data-key="reports">گزارشات مالی</h2>
+                <h2 style="margin-bottom: 20px; color: var(--gold-primary);" data-key="reports">گزارشات مالی و کشوری</h2>
                 
                 <select id="report-filter" onchange="renderReportsPage()" style="padding: 10px; font-size: 14px; margin-bottom: 20px;">
                     <option value="all">همه زمان‌ها</option>
@@ -292,20 +290,21 @@
                     <option value="last_month">ماه گذشته</option>
                 </select>
 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px;">
-                    <div style="background: rgba(46, 204, 113, 0.1); padding: 15px; border-radius: 12px; text-align: center;">
-                        <span style="font-size: 10px; color: #aaa;">درآمد دوره</span>
-                        <div id="rep-inc" style="color: var(--accent-green); font-weight: bold; margin-top: 5px;">0</div>
-                    </div>
-                    <div style="background: rgba(231, 76, 60, 0.1); padding: 15px; border-radius: 12px; text-align: center;">
-                        <span style="font-size: 10px; color: #aaa;">هزینه دوره</span>
-                        <div id="rep-exp" style="color: var(--accent-red); font-weight: bold; margin-top: 5px;">0</div>
-                    </div>
+                <div style="margin-bottom: 25px;">
+                    <h4 style="color:#fff; margin-bottom:15px; font-size:14px; border-right:3px solid var(--gold-primary); padding-right:10px;">وضعیت مخارج به تفکیک کشور</h4>
+                    <div id="country-report-list" class="tx-list">
+                        </div>
                 </div>
 
-                <div style="background: rgba(212, 175, 55, 0.1); padding: 15px; border-radius: 12px; text-align: center; margin-bottom: 20px; border: 1px solid rgba(212, 175, 55, 0.2);">
-                    <span style="font-size: 12px; color: var(--gold-primary);">سود خالص دوره</span>
-                    <div id="rep-net" style="color: #fff; font-weight: 800; font-size: 20px; margin-top: 5px;">0</div>
+                <div style="background: rgba(212, 175, 55, 0.05); padding: 15px; border-radius: 12px; margin-bottom: 20px; border: 1px solid rgba(212, 175, 55, 0.1);">
+                    <div style="display: flex; justify-content: space-between; margin-bottom:10px;">
+                        <span style="font-size: 12px; color: var(--accent-green);">کل دریافتی:</span>
+                        <span id="rep-inc" style="color: #fff; font-weight: bold;">0</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span style="font-size: 12px; color: var(--accent-red);">کل مخارج:</span>
+                        <span id="rep-exp" style="color: #fff; font-weight: bold;">0</span>
+                    </div>
                 </div>
 
                 <div style="height: 250px; display: flex; justify-content: center; margin-bottom: 20px;">
@@ -360,17 +359,30 @@
                 <i class="fas fa-times" onclick="document.getElementById('tx-modal').classList.add('hidden')" style="padding: 10px; cursor: pointer;"></i>
             </div>
             
-            <input type="number" id="tx-amount" step="0.01" placeholder="مبلغ (تومان/درهم)">
-            <select id="tx-currency">
-                <option value="Toman">تومان</option>
-                <option value="AED">درهم (AED)</option>
-                <option value="USD">دلار (USD)</option>
-                <option value="EUR">یورو (EUR)</option>
-            </select>
+            <label style="font-size:12px; color:#aaa; margin-bottom:5px; display:block;">محل و نوع ارز</label>
+            <div style="display:flex; gap:10px;">
+                <select id="tx-country" style="flex:1">
+                    <option value="UAE">دبی (UAE)</option>
+                    <option value="TR">ترکیه (Turkey)</option>
+                    <option value="AF">افغانستان (AFG)</option>
+                </select>
+                <select id="tx-currency" style="flex:1">
+                    <option value="AED">درهم (AED)</option>
+                    <option value="TRY">لیر (TRY)</option>
+                    <option value="AFN">افغانی (AFN)</option>
+                    <option value="USD">دلار (USD)</option>
+                    <option value="EUR">یورو (EUR)</option>
+                    <option value="Toman">تومان</option>
+                </select>
+            </div>
+
+            <input type="number" id="tx-amount" step="0.01" placeholder="مبلغ">
+            
             <select id="tx-customer-select">
-                <option value="" disabled selected>انتخاب مشتری</option>
+                <option value="" disabled selected>انتخاب شخص / بابت</option>
             </select>
-            <textarea id="tx-desc" rows="2" placeholder="توضیحات..." style="width:100%; background:rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.1); border-radius:14px; color:#fff; padding:10px; margin-bottom:15px;"></textarea>
+            
+            <textarea id="tx-desc" rows="2" placeholder="توضیحات (مثلا: اجاره خانه، خرید سوپر مارکت...)" style="width:100%; background:rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.1); border-radius:14px; color:#fff; padding:10px; margin-bottom:15px;"></textarea>
             
             <button class="btn-gold" onclick="saveTransaction()">ثبت نهایی</button>
         </div>
@@ -387,7 +399,7 @@
         </div>
         <div class="nav-link" onclick="navigate('customers', this)">
             <i class="fas fa-users"></i>
-            <span data-key="customers">مشتریان</span>
+            <span data-key="customers">اشخاص</span>
         </div>
         <div class="nav-link" onclick="navigate('reports', this)">
             <i class="fas fa-chart-pie"></i>
@@ -397,7 +409,6 @@
 
     <script>
         // --- CONFIGURATION ---
-        // برای فعالسازی، مقادیر زیر را از کنسول فایربیس خود پر کنید
         const firebaseConfig = {
             apiKey: "YOUR_API_KEY_HERE",
             authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
@@ -415,10 +426,16 @@
             settings: { lang: 'fa' }
         };
         let currentTxType = 'income';
+        
+        // Country mapping for display
+        const COUNTRY_MAP = {
+            'UAE': { name: 'دبی', flag: '🇦🇪' },
+            'TR': { name: 'ترکیه', flag: '🇹🇷' },
+            'AF': { name: 'افغانستان', flag: '🇦🇫' }
+        };
 
         // --- INIT ---
         window.onload = async () => {
-            // Firebase Init Check
             try {
                 if(firebaseConfig.apiKey !== "YOUR_API_KEY_HERE" && typeof firebase !== 'undefined') {
                     firebase.initializeApp(firebaseConfig);
@@ -440,26 +457,22 @@
 
         // --- CORE FUNCTIONS ---
         function loadLocalData() {
-            const saved = localStorage.getItem('khademe_data_v3');
+            const saved = localStorage.getItem('khademe_data_v4_multi');
             if (saved) {
                 try {
                     data = JSON.parse(saved);
-                    // Ensure structure integrity
                     if(!data.transactions) data.transactions = [];
                     if(!data.customers) data.customers = [];
-                } catch(e) {
-                    console.error("Data Parse Error", e);
-                }
+                } catch(e) { console.error("Data Parse Error", e); }
             }
         }
 
         function saveData() {
-            localStorage.setItem('khademe_data_v3', JSON.stringify(data));
+            localStorage.setItem('khademe_data_v4_multi', JSON.stringify(data));
             updateUI();
         }
 
         function formatMoney(amount) {
-            // Formats with commas and handles decimals properly
             return parseFloat(amount).toLocaleString(undefined, { maximumFractionDigits: 2 });
         }
 
@@ -473,15 +486,15 @@
                 el.classList.add('active');
             }
 
-            if(pageId === 'home') renderChart(); // Force redraw chart on tab switch
+            if(pageId === 'home') renderChart(); 
             if(pageId === 'transactions') renderTransactionsPage();
             if(pageId === 'customers') renderCustomersPage();
             if(pageId === 'reports') renderReportsPage();
         }
 
         function updateUI() {
-            // Totals
             let income = 0, expense = 0;
+            // Note: Mixing currencies in total is tricky, displaying raw number here
             data.transactions.forEach(t => {
                 const amt = parseFloat(t.amount);
                 if(t.type === 'income') income += amt;
@@ -492,28 +505,22 @@
             document.getElementById('total-expense').innerText = formatMoney(expense);
             document.getElementById('total-balance').innerText = formatMoney(income - expense);
 
-            // Select Options
             const sel = document.getElementById('tx-customer-select');
-            // Save current selection if re-rendering
             const currentVal = sel.value;
-            sel.innerHTML = '<option value="" disabled selected>انتخاب مشتری</option>';
+            sel.innerHTML = '<option value="" disabled selected>انتخاب شخص / بابت</option>';
             data.customers.forEach(c => {
                 sel.innerHTML += `<option value="${c.id}">${c.name}</option>`;
             });
             if(currentVal) sel.value = currentVal;
 
-            // Recent (Home Page)
             const recentList = document.getElementById('recent-transactions');
             recentList.innerHTML = '';
-            // Clone array, reverse to show newest first, take top 5
             const recentTx = [...data.transactions].sort((a,b) => new Date(b.date) - new Date(a.date)).slice(0, 5);
             
             if(recentTx.length === 0) {
                 recentList.innerHTML = '<div style="text-align:center; color:#555; padding:20px; font-size:12px;">هنوز تراکنشی ثبت نشده است</div>';
             } else {
-                recentTx.forEach(tx => {
-                    recentList.innerHTML += createTxHTML(tx, false); // false = no delete button in mini view
-                });
+                recentTx.forEach(tx => recentList.innerHTML += createTxHTML(tx, false));
             }
 
             renderChart();
@@ -523,10 +530,9 @@
         function createTxHTML(tx, allowDelete = true) {
             const customer = data.customers.find(c => c.id == tx.customerId)?.name || 'ناشناس';
             const isInc = tx.type === 'income';
-            
             const d = new Date(tx.date);
-            // Safe date formatting
-            const dateStr = d.toLocaleDateString('fa-IR') + ' ' + d.toLocaleTimeString('fa-IR', {hour:'2-digit', minute:'2-digit'});
+            const dateStr = d.toLocaleDateString('fa-IR');
+            const countryInfo = COUNTRY_MAP[tx.country] || { name: 'عمومی', flag: '🌍' };
             
             const deleteBtn = allowDelete ? 
                 `<i class="fas fa-trash btn-delete-mini" onclick="deleteTransaction(${tx.id})"></i>` : '';
@@ -539,7 +545,10 @@
                         </div>
                         <div class="tx-info">
                             <h4>${customer}</h4>
-                            <p>${tx.desc || dateStr}</p>
+                            <p>
+                                <span class="tag-country">${countryInfo.flag} ${countryInfo.name}</span>
+                                ${tx.desc || dateStr}
+                            </p>
                         </div>
                     </div>
                     <div class="tx-right-group">
@@ -556,7 +565,7 @@
         // --- TRANSACTIONS ---
         function openTxModal(type) {
             currentTxType = type;
-            document.getElementById('modal-title').innerText = type === 'income' ? 'ثبت دریافتی' : 'ثبت پرداختی';
+            document.getElementById('modal-title').innerText = type === 'income' ? 'ثبت دریافتی' : 'ثبت مخارج';
             document.getElementById('tx-modal').classList.remove('hidden');
         }
 
@@ -564,9 +573,10 @@
             const amountStr = document.getElementById('tx-amount').value;
             const custId = document.getElementById('tx-customer-select').value;
             const currency = document.getElementById('tx-currency').value;
+            const country = document.getElementById('tx-country').value;
             const desc = document.getElementById('tx-desc').value;
 
-            if(!amountStr || !custId) return alert('لطفا مبلغ و مشتری را وارد کنید');
+            if(!amountStr || !custId) return alert('لطفا مبلغ و شخص/بابت را انتخاب کنید');
             
             const amount = parseFloat(amountStr);
             if(isNaN(amount)) return alert('مبلغ نامعتبر است');
@@ -576,6 +586,7 @@
                 type: currentTxType,
                 amount: amount,
                 currency: currency,
+                country: country, // New Field
                 customerId: custId,
                 desc: desc,
                 date: new Date().toISOString()
@@ -584,17 +595,16 @@
             data.transactions.push(tx);
             saveData();
             
-            // Cleanup
             document.getElementById('tx-amount').value = '';
             document.getElementById('tx-desc').value = '';
             document.getElementById('tx-modal').classList.add('hidden');
         }
 
         function deleteTransaction(id) {
-            if(confirm('آیا از حذف این تراکنش اطمینان دارید؟')) {
+            if(confirm('حذف تراکنش؟')) {
                 data.transactions = data.transactions.filter(t => t.id !== id);
                 saveData();
-                renderTransactionsPage(); // Re-render list if on that page
+                renderTransactionsPage();
             }
         }
 
@@ -605,24 +615,24 @@
             
             const filtered = data.transactions.filter(t => {
                 const cName = data.customers.find(c => c.id == t.customerId)?.name || '';
-                return cName.toLowerCase().includes(term) || (t.desc && t.desc.toLowerCase().includes(term));
+                const ctry = COUNTRY_MAP[t.country]?.name || '';
+                return cName.toLowerCase().includes(term) || 
+                       (t.desc && t.desc.toLowerCase().includes(term)) ||
+                       ctry.includes(term);
             });
 
-            // Show newest first
             filtered.sort((a,b) => new Date(b.date) - new Date(a.date)).forEach(tx => {
                 list.innerHTML += createTxHTML(tx, true);
             });
             
-            if(filtered.length === 0) {
-                 list.innerHTML = '<div style="text-align:center; color:#555; padding:20px;">موردی یافت نشد</div>';
-            }
+            if(filtered.length === 0) list.innerHTML = '<div style="text-align:center; color:#555; padding:20px;">موردی یافت نشد</div>';
         }
 
         // --- CUSTOMERS ---
         function addCustomer() {
             const name = document.getElementById('new-cust-name').value;
             const phone = document.getElementById('new-cust-phone').value;
-            if(!name) return alert('نام مشتری الزامی است');
+            if(!name) return alert('نام الزامی است');
 
             data.customers.push({ id: Date.now(), name, phone });
             saveData();
@@ -632,17 +642,11 @@
         }
 
         function deleteCustomer(id) {
-            // Optional: Check for existing transactions
-            const hasTx = data.transactions.some(t => t.customerId == id);
-            if(hasTx) {
-                if(!confirm('این مشتری دارای تراکنش ثبت شده است. حذف مشتری باعث می‌شود نام او در تراکنش‌ها "ناشناس" شود. ادامه می‌دهید؟')) return;
-            } else {
-                if(!confirm('حذف مشتری؟')) return;
+            if(confirm('حذف شخص/عضو خانواده؟')) {
+                data.customers = data.customers.filter(c => c.id !== id);
+                saveData();
+                renderCustomersPage();
             }
-
-            data.customers = data.customers.filter(c => c.id !== id);
-            saveData();
-            renderCustomersPage();
         }
 
         function renderCustomersPage() {
@@ -650,6 +654,7 @@
             list.innerHTML = '';
             data.customers.forEach(c => {
                 const txs = data.transactions.filter(t => t.customerId == c.id);
+                // Simple volume sum regardless of currency (approx)
                 const volume = txs.reduce((sum, t) => sum + parseFloat(t.amount), 0);
                 
                 list.innerHTML += `
@@ -665,7 +670,6 @@
                         </div>
                         <div class="tx-right-group">
                             <div class="tx-amount" style="font-size:12px; color:#fff;">${txs.length} تراکنش</div>
-                            <div style="font-size:10px; color:#888;">حجم: ${formatMoney(volume)}</div>
                         </div>
                         <div class="tx-actions">
                              <i class="fas fa-trash btn-delete-mini" onclick="deleteCustomer(${c.id})"></i>
@@ -681,12 +685,13 @@
         function renderReportsPage() {
             const filter = document.getElementById('report-filter').value;
             const now = new Date();
+            
+            // Filter Date
             let filteredTx = data.transactions.filter(t => {
                 const tDate = new Date(t.date);
                 if (filter === 'month') {
                     return tDate.getMonth() === now.getMonth() && tDate.getFullYear() === now.getFullYear();
                 } else if (filter === 'last_month') {
-                    // Handle Jan case logic properly
                     let lastM = now.getMonth() - 1;
                     let year = now.getFullYear();
                     if(lastM < 0) { lastM = 11; year--; }
@@ -695,40 +700,76 @@
                 return true;
             });
 
+            // Calculate Totals & Country Grouping
             let rInc = 0, rExp = 0;
             const custMap = {};
+            const countryStats = {
+                'UAE': { inc: 0, exp: 0, currency: 'AED' },
+                'TR': { inc: 0, exp: 0, currency: 'TRY' },
+                'AF': { inc: 0, exp: 0, currency: 'AFN' }
+            };
 
             filteredTx.forEach(t => {
                 const amt = parseFloat(t.amount);
                 if(t.type === 'income') rInc += amt;
                 else rExp += amt;
 
-                // Top Customer Logic
+                // Country Stats
+                const cCode = t.country || 'UAE'; // Default to UAE if old data
+                if(!countryStats[cCode]) countryStats[cCode] = { inc:0, exp:0, currency: t.currency };
+                
+                if(t.type === 'income') countryStats[cCode].inc += amt;
+                else countryStats[cCode].exp += amt;
+
+                // Top Customer
                 if(!custMap[t.customerId]) custMap[t.customerId] = 0;
                 custMap[t.customerId] += amt;
             });
 
-            // Update UI
+            // Update Totals
             document.getElementById('rep-inc').innerText = formatMoney(rInc);
             document.getElementById('rep-exp').innerText = formatMoney(rExp);
-            const net = rInc - rExp;
-            document.getElementById('rep-net').innerText = formatMoney(net);
-            document.getElementById('rep-net').style.color = net >= 0 ? '#2ecc71' : '#e74c3c';
+
+            // Render Country Report
+            const cList = document.getElementById('country-report-list');
+            cList.innerHTML = '';
+            for (const [code, stats] of Object.entries(countryStats)) {
+                if(stats.inc === 0 && stats.exp === 0) continue; // Skip empty countries
+                
+                const cInfo = COUNTRY_MAP[code] || { name: code, flag: '🏳️' };
+                const net = stats.inc - stats.exp;
+                
+                cList.innerHTML += `
+                    <div class="tx-item" style="flex-direction:column; align-items:stretch; padding:15px;">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+                            <div style="display:flex; align-items:center; gap:10px;">
+                                <span style="font-size:20px;">${cInfo.flag}</span>
+                                <span style="font-weight:bold; color:var(--gold-primary);">${cInfo.name}</span>
+                            </div>
+                            <div style="font-size:12px; color:#888;">خالص: <span style="color:#fff">${formatMoney(net)}</span></div>
+                        </div>
+                        <div style="display:flex; gap:10px;">
+                            <div style="flex:1; background:rgba(46, 204, 113, 0.1); padding:8px; border-radius:8px; text-align:center;">
+                                <div style="font-size:10px; color:#aaa;">دریافتی</div>
+                                <div style="color:var(--accent-green); font-weight:bold;">${formatMoney(stats.inc)}</div>
+                            </div>
+                            <div style="flex:1; background:rgba(231, 76, 60, 0.1); padding:8px; border-radius:8px; text-align:center;">
+                                <div style="font-size:10px; color:#aaa;">مخارج</div>
+                                <div style="color:var(--accent-red); font-weight:bold;">${formatMoney(stats.exp)}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
 
             // Report Chart
             const ctx = document.getElementById('reportPieChart');
             if(reportChartInstance) reportChartInstance.destroy();
-            
-            // Prevent chart error if no data
-            if (rInc === 0 && rExp === 0) {
-                 // Clean canvas or show placeholder?
-                 // Chart.js handles 0 data gracefully usually, but let's be safe
-            }
 
             reportChartInstance = new Chart(ctx, {
                 type: 'doughnut',
                 data: {
-                    labels: ['دریافتی', 'پرداختی'],
+                    labels: ['دریافتی', 'مخارج'],
                     datasets: [{
                         data: [rInc, rExp],
                         backgroundColor: ['#2ecc71', '#e74c3c'],
@@ -744,7 +785,7 @@
                 }
             });
 
-            // Top Customers List
+            // Top Customers
             const topList = document.getElementById('top-customers-list');
             topList.innerHTML = '';
             const sortedCusts = Object.keys(custMap).sort((a,b) => custMap[b] - custMap[a]).slice(0, 5);
@@ -767,27 +808,19 @@
             if(!ctx) return;
             
             const sorted = [...data.transactions].sort((a,b) => new Date(a.date) - new Date(b.date));
-            
             let balance = 0;
-            const labels = [];
-            const dataPoints = [];
-            
-            // Initial point
-            labels.push('');
-            dataPoints.push(0);
+            const labels = [''];
+            const dataPoints = [0];
 
             sorted.forEach(t => {
                 if(t.type === 'income') balance += parseFloat(t.amount);
                 else balance -= parseFloat(t.amount);
-                
                 labels.push('');
                 dataPoints.push(balance);
             });
 
-            const limit = 20;
-            // Ensure array length consistency
-            const finalData = dataPoints.slice(-limit);
-            const finalLabels = labels.slice(-limit);
+            const finalData = dataPoints.slice(-20);
+            const finalLabels = labels.slice(-20);
 
             if(mainChartInstance) mainChartInstance.destroy();
 
@@ -817,14 +850,8 @@
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: { legend: { display: false } },
-                    scales: {
-                        x: { display: false },
-                        y: { display: false }
-                    },
-                    interaction: {
-                        intersect: false,
-                        mode: 'index',
-                    }
+                    scales: { x: { display: false }, y: { display: false } },
+                    interaction: { intersect: false, mode: 'index' }
                 }
             });
         }
@@ -832,18 +859,18 @@
         // --- EXPORT ---
         function exportExcel() {
             const wb = XLSX.utils.book_new();
-            
             const txData = data.transactions.map(t => ({
                 تاریخ: new Date(t.date).toLocaleDateString('fa-IR'),
                 نوع: t.type === 'income' ? 'دریافت' : 'پرداخت',
                 مبلغ: t.amount,
                 ارز: t.currency,
-                مشتری: data.customers.find(c => c.id == t.customerId)?.name || 'ناشناس',
+                کشور: COUNTRY_MAP[t.country]?.name || t.country,
+                شخص: data.customers.find(c => c.id == t.customerId)?.name || 'ناشناس',
                 توضیحات: t.desc
             }));
             const ws = XLSX.utils.json_to_sheet(txData);
             XLSX.utils.book_append_sheet(wb, ws, "Transactions");
-            XLSX.writeFile(wb, "Khademe_Report.xlsx");
+            XLSX.writeFile(wb, "Khademe_Multi_Report.xlsx");
         }
 
         // --- CLOUD SYNC ---
@@ -855,7 +882,7 @@
             const originalText = btn.innerHTML;
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ...';
             try {
-                await db.collection('backups').doc('main_db').set(data);
+                await db.collection('backups').doc('multi_country_db').set(data);
                 alert("✅ ذخیره شد.");
             } catch (e) { alert("❌ خطا: " + e.message); }
             btn.innerHTML = originalText;
@@ -869,7 +896,7 @@
             const originalText = btn.innerHTML;
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ...';
             try {
-                const doc = await db.collection('backups').doc('main_db').get();
+                const doc = await db.collection('backups').doc('multi_country_db').get();
                 if (doc.exists) {
                     data = doc.data();
                     saveData();
@@ -880,21 +907,11 @@
             btn.innerHTML = originalText;
         }
 
-        // --- LANG ---
         function toggleLang() {
             const html = document.documentElement;
             html.lang = html.lang === 'fa' ? 'en' : 'fa';
             html.dir = html.lang === 'fa' ? 'rtl' : 'ltr';
-            
-            const dict = {
-                'fa': { 'home': 'خانه', 'transactions': 'کیف پول', 'customers': 'مشتریان', 'settings': 'تنظیمات', 'reports': 'گزارشات', 'income': 'دریافتی', 'expense': 'پرداختی', 'recent': 'تراکنش‌های اخیر', 'total-balance': 'موجودی کل' },
-                'en': { 'home': 'Home', 'transactions': 'Wallet', 'customers': 'Customers', 'settings': 'Settings', 'reports': 'Reports', 'income': 'Income', 'expense': 'Expense', 'recent': 'Recent Tx', 'total-balance': 'Total Balance' }
-            };
-            
-            document.querySelectorAll('[data-key]').forEach(el => {
-                const k = el.getAttribute('data-key');
-                if(dict[html.lang][k]) el.innerText = dict[html.lang][k];
-            });
+            alert('این نسخه فعلا برای فارسی بهینه شده است');
         }
     </script>
 </body>
