@@ -279,6 +279,9 @@
             <div class="pin-btn" onclick="pressPin(0)">0</div>
             <div class="pin-btn" style="border:none; color:var(--accent-red)" onclick="clearPin()"><i class="fas fa-backspace"></i></div>
         </div>
+<div id="forgot-btn" onclick="forgotPin()" style="margin-top: 20px; color: #666; font-size: 12px; cursor: pointer; text-decoration: underline;">
+    رمز را فراموش کرده‌ام (بازیابی)
+</div>
     </div>
 
     <div class="app-container" id="main-app">
@@ -440,22 +443,14 @@
                 <i class="fas fa-times" onclick="document.getElementById('tx-modal').classList.add('hidden')" style="padding: 10px; cursor: pointer;"></i>
             </div>
             
-            <div style="display:flex; gap:10px;">
-                <select id="tx-country" style="flex:1">
-                    <option value="UAE">🇦🇪 UAE</option>
-                    <option value="TR">🇹🇷 Turkey</option>
-                    <option value="AF">🇦🇫 Afghan</option>
-                    <option value="IR">🇮🇷 Iran</option>
-                </select>
-                <select id="tx-currency" style="flex:1">
-                    <option value="AED">AED</option>
-                    <option value="USD">USD</option>
-                    <option value="TRY">TRY</option>
-                    <option value="AFN">AFN</option>
-                    <option value="IRR">IRR</option>
-                    <option value="EUR">EUR</option>
-                </select>
-            </div>
+            <select id="tx-currency" style="margin-bottom: 12px;">
+    <option value="AED">AED (درهم)</option>
+    <option value="USD">USD (دلار)</option>
+    <option value="TRY">TRY (لیر)</option>
+    <option value="AFN">AFN (افغانی)</option>
+    <option value="IRR">IRR (تومان/ریال)</option>
+    <option value="EUR">EUR (یورو)</option>
+</select>
 
             <input type="number" id="tx-amount" step="0.01" data-ph="amt_ph" placeholder="مبلغ">
             <select id="tx-customer-select"></select>
@@ -472,9 +467,11 @@
     </nav>
 
     <script>
-        // --- AUTH SYSTEM ---
+
+// --- AUTH SYSTEM (UPDATED) ---
         let currentPin = '';
         let savedPin = localStorage.getItem('khademe_pin');
+        let recoveryCode = localStorage.getItem('khademe_recovery'); // کد بازیابی
         let isSettingPin = !savedPin;
 
         window.onload = () => {
@@ -487,11 +484,16 @@
 
         function initAuth() {
             const msg = document.getElementById('login-msg');
+            const forgotBtn = document.getElementById('forgot-btn');
+
             if(isSettingPin) {
-                msg.innerText = "یک رمز عبور ۴ رقمی تعیین کنید";
+                msg.innerText = "یک رمز عبور ۴ رقمی جدید تعیین کنید";
                 msg.style.color = "var(--gold-primary)";
+                if(forgotBtn) forgotBtn.style.display = 'none'; // مخفی کردن دکمه فراموشی هنگام ثبت نام
             } else {
                 msg.innerText = "لطفا رمز عبور را وارد کنید";
+                msg.style.color = "#888";
+                if(forgotBtn) forgotBtn.style.display = 'block';
             }
         }
 
@@ -516,23 +518,54 @@
         function checkPin() {
             setTimeout(() => {
                 if(isSettingPin) {
+                    // --- تایید رمز جدید و ساخت کد بازیابی ---
                     if(!confirm('رمز انتخاب شده: ' + currentPin + '\nآیا مطمئن هستید؟')) {
                         clearPin();
                         return;
                     }
+
+                    // تولید کد بازیابی ۸ رقمی تصادفی
+                    const newRecoveryCode = Math.floor(10000000 + Math.random() * 90000000);
+                    
+                    alert(`⚠️ کد بازیابی شما: ${newRecoveryCode}\n\nلطفا این کد را یادداشت کنید. اگر رمز را فراموش کنید، تنها راه بازگشت اطلاعات این کد است.`);
+                    
                     localStorage.setItem('khademe_pin', currentPin);
+                    localStorage.setItem('khademe_recovery', newRecoveryCode);
+                    
                     savedPin = currentPin;
+                    recoveryCode = newRecoveryCode;
                     isSettingPin = false;
                     unlockApp();
+
                 } else {
+                    // --- ورود عادی ---
                     if(currentPin === savedPin) {
                         unlockApp();
                     } else {
-                        alert('رمز اشتباه است');
-                        clearPin();
+                        const msg = document.getElementById('login-msg');
+                        msg.innerText = "رمز اشتباه است!";
+                        msg.style.color = "var(--accent-red)";
+                        setTimeout(() => {
+                            clearPin();
+                            msg.innerText = "لطفا رمز عبور را وارد کنید";
+                            msg.style.color = "#888";
+                        }, 1000);
                     }
                 }
             }, 100);
+        }
+
+        function forgotPin() {
+            const inputCode = prompt("لطفا کد بازیابی ۸ رقمی (Recovery Code) خود را وارد کنید:");
+            if (inputCode === null) return; 
+
+            if (inputCode == recoveryCode) {
+                alert("کد صحیح بود. لطفا رمز جدید تعیین کنید.");
+                localStorage.removeItem('khademe_pin');
+                location.reload(); 
+            } else {
+                alert("کد بازیابی اشتباه است.");
+            }
         }
 
         function unlockApp() {
@@ -543,7 +576,7 @@
         }
 
         function changePin() {
-            if(confirm('آیا می‌خواهید رمز جدید تعیین کنید؟')) {
+            if(confirm('آیا می‌خواهید رمز جدید تعیین کنید؟ (کد بازیابی هم تغییر می‌کند)')) {
                 localStorage.removeItem('khademe_pin');
                 location.reload();
             }
@@ -766,7 +799,7 @@
                         </div>
                         <div class="tx-content">
                             <h4>${customer.name}</h4>
-                            <p>${tx.country} | ${tx.desc || '-'}</p>
+                            <p>${tx.desc || 'بدون توضیحات'}</p>
                         </div>
                     </div>
                     <div style="text-align:${currentLang==='fa'?'left':'right'};">
@@ -790,16 +823,16 @@
             const custId = document.getElementById('tx-customer-select').value;
             if(!amount || !custId) return alert(lang[currentLang].alert_input);
 
-            const tx = {
-                id: Date.now(),
-                type: currentTxType,
-                amount: amount,
-                currency: document.getElementById('tx-currency').value,
-                country: document.getElementById('tx-country').value,
-                customerId: custId,
-                desc: document.getElementById('tx-desc').value,
-                date: new Date().toISOString()
-            };
+           const tx = {
+    id: Date.now(),
+    type: currentTxType,
+    amount: amount,
+    currency: document.getElementById('tx-currency').value,
+    // خط کشور حذف شد
+    customerId: custId,
+    desc: document.getElementById('tx-desc').value,
+    date: new Date().toISOString()
+};
             data.transactions.push(tx);
             saveData();
             document.getElementById('tx-modal').classList.add('hidden');
@@ -941,53 +974,57 @@
     });
 }
         function renderReportsPage() {
-            const filterType = document.getElementById('report-filter-type').value; 
-            
-            let relevantTx = data.transactions.filter(t => {
-                const c = data.customers.find(cu => cu.id == t.customerId);
-                if(!c) return false;
-                if(filterType === 'all') return true;
-                return c.type === filterType; 
-            });
+    const filterType = document.getElementById('report-filter-type').value; 
+    
+    let relevantTx = data.transactions.filter(t => {
+        const c = data.customers.find(cu => cu.id == t.customerId);
+        if(!c) return false;
+        if(filterType === 'all') return true;
+        return c.type === filterType; 
+    });
 
-            const countryStats = {};
-            relevantTx.forEach(t => {
-                const key = `${t.country}-${t.currency}`;
-                if(!countryStats[key]) countryStats[key] = { inc: 0, exp: 0, country: t.country, curr: t.currency };
-                
-                if(t.type === 'income') countryStats[key].inc += parseFloat(t.amount);
-                else countryStats[key].exp += parseFloat(t.amount);
-            });
+    // تغییر منطق: گروه‌بندی فقط بر اساس ارز
+    const currencyStats = {};
+    relevantTx.forEach(t => {
+        const key = t.currency; // کلید فقط ارز است
+        if(!currencyStats[key]) currencyStats[key] = { inc: 0, exp: 0, curr: t.currency };
+        
+        if(t.type === 'income') currencyStats[key].inc += parseFloat(t.amount);
+        else currencyStats[key].exp += parseFloat(t.amount);
+    });
 
-            const list = document.getElementById('country-report-list');
-            list.innerHTML = '';
-            
-            if(Object.keys(countryStats).length === 0) {
-                list.innerHTML = `<div style="text-align:center; padding:20px; color:#666;">${lang[currentLang].no_data}</div>`;
-            }
+    const list = document.getElementById('country-report-list');
+    list.innerHTML = '';
+    
+    // تغییر تیتر گزارش در HTML هم پیشنهاد می‌شود (دستی انجام دهید یا با جاوااسکریپت)
+    document.querySelector('[data-lang="by_country"]').innerText = "تفکیک بر اساس ارز";
 
-            for(const stats of Object.values(countryStats)) {
-                const net = stats.inc - stats.exp;
-                list.innerHTML += `
-                    <div class="tx-item" style="display:block; cursor:default;">
-                        <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
-                            <span style="font-weight:bold; color:var(--gold-primary);">${stats.country} (${stats.curr})</span>
-                            <span style="direction:ltr; font-weight:bold; color:${net>=0?'#fff':'#e74c3c'}">Net: ${formatMoney(net)}</span>
-                        </div>
-                        <div style="display:flex; gap:5px;">
-                            <div style="flex:1; background:rgba(46,204,113,0.1); padding:5px; border-radius:5px; text-align:center;">
-                                <small style="color:#aaa">${lang[currentLang].income}</small><br>
-                                <span style="color:#2ecc71">${formatMoney(stats.inc)}</span>
-                            </div>
-                            <div style="flex:1; background:rgba(231,76,60,0.1); padding:5px; border-radius:5px; text-align:center;">
-                                <small style="color:#aaa">${lang[currentLang].expense}</small><br>
-                                <span style="color:#e74c3c">${formatMoney(stats.exp)}</span>
-                            </div>
-                        </div>
+    if(Object.keys(currencyStats).length === 0) {
+        list.innerHTML = `<div style="text-align:center; padding:20px; color:#666;">${lang[currentLang].no_data}</div>`;
+    }
+
+    for(const stats of Object.values(currencyStats)) {
+        const net = stats.inc - stats.exp;
+        list.innerHTML += `
+            <div class="tx-item" style="display:block; cursor:default;">
+                <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+                    <span style="font-weight:bold; color:var(--gold-primary); font-size:16px;">${stats.curr}</span>
+                    <span style="direction:ltr; font-weight:bold; color:${net>=0?'#fff':'#e74c3c'}">تراز: ${formatMoney(net)}</span>
+                </div>
+                <div style="display:flex; gap:5px;">
+                    <div style="flex:1; background:rgba(46,204,113,0.1); padding:5px; border-radius:5px; text-align:center;">
+                        <small style="color:#aaa">${lang[currentLang].income}</small><br>
+                        <span style="color:#2ecc71">${formatMoney(stats.inc)}</span>
                     </div>
-                `;
-            }
-        }
+                    <div style="flex:1; background:rgba(231,76,60,0.1); padding:5px; border-radius:5px; text-align:center;">
+                        <small style="color:#aaa">${lang[currentLang].expense}</small><br>
+                        <span style="color:#e74c3c">${formatMoney(stats.exp)}</span>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+}
 
         async function syncUpload() {
             if(!confirm('Upload?')) return;
