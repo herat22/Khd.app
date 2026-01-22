@@ -804,13 +804,18 @@
             });
         }
 
-        function createTxHTML(tx) {
+       function createTxHTML(tx) {
     const customer = data.customers.find(c => c.id == tx.customerId) || { name: lang[currentLang].unknown };
     const isInc = tx.type === 'income';
     
-    // فرمت کردن تاریخ برای نمایش
+    // --- تنظیم نمایش دو تاریخه (میلادی + شمسی) ---
     const dateObj = new Date(tx.date);
-    const dateStr = dateObj.toLocaleDateString(currentLang === 'fa' ? 'fa-IR' : 'en-US');
+    const miladi = dateObj.toISOString().split('T')[0]; // فرمت: 2026-01-22
+    const shamsi = dateObj.toLocaleDateString('fa-IR'); // فرمت: ۱۴۰۴/۱۱/۰۲
+    
+    // ساخت نمایش نهایی: میلادی پررنگ، شمسی ریز در پرانتز
+    const dateStr = `<span dir="ltr">${miladi}</span> <span style="font-size:10px; opacity:0.7">(${shamsi})</span>`;
+    // ------------------------------------------------
 
     return `
         <div class="tx-item" style="flex-wrap: wrap;">
@@ -965,7 +970,7 @@ function saveTransaction() {
             });
         }
 
-        function openCustomerStatement(custId) {
+     function openCustomerStatement(custId) {
     const customer = data.customers.find(c => c.id == custId);
     if(!customer) return;
 
@@ -975,10 +980,10 @@ function saveTransaction() {
     
     // پر کردن هدر
     document.getElementById('stmt-name').innerText = customer.name;
-    document.getElementById('stmt-name').style.color = 'var(--gold-primary)'; // اصلاح رنگ نام
+    document.getElementById('stmt-name').style.color = 'var(--gold-primary)';
     document.getElementById('stmt-phone').innerText = customer.phone || '---';
-    const dateStr = new Date().toLocaleDateString(currentLang === 'fa' ? 'fa-IR' : 'en-US');
-    document.getElementById('stmt-date').innerText = `${lang[currentLang].date}: ${dateStr}`;
+    const dateStrHead = new Date().toLocaleDateString(currentLang === 'fa' ? 'fa-IR' : 'en-US');
+    document.getElementById('stmt-date').innerText = `${lang[currentLang].date}: ${dateStrHead}`;
 
     // فیلتر کردن تراکنش‌های این مشتری
     const txs = data.transactions.filter(t => t.customerId == custId).sort((a,b) => new Date(b.date) - new Date(a.date));
@@ -991,7 +996,7 @@ function saveTransaction() {
         else balances[t.currency] -= parseFloat(t.amount); 
     });
 
-    // نمایش خلاصه حساب (Summary) با استایل تیره
+    // نمایش خلاصه حساب (Summary)
     const summaryDiv = document.getElementById('stmt-summary');
     summaryDiv.innerHTML = '';
     const hasBal = Object.keys(balances).length > 0;
@@ -1000,8 +1005,7 @@ function saveTransaction() {
         summaryDiv.innerHTML = `<span style="color:#666; font-size:12px;">تراکنشی یافت نشد.</span>`;
     } else {
         for(const [curr, amt] of Object.entries(balances)) {
-            const color = amt >= 0 ? '#2ecc71' : '#e74c3c'; // رنگ‌های روشن‌تر برای پس‌زمینه مشکی
-            // اصلاح رنگ پس‌زمینه باکس‌های خلاصه
+            const color = amt >= 0 ? '#2ecc71' : '#e74c3c';
             summaryDiv.innerHTML += `
                 <div style="background:rgba(255,255,255,0.05); padding:5px 15px; border:1px solid rgba(255,255,255,0.1); border-radius:6px; min-width:100px; text-align:center;">
                     <div style="font-size:11px; color:#aaa;">${curr}</div>
@@ -1018,13 +1022,21 @@ function saveTransaction() {
     mobileList.innerHTML = '';
     txs.forEach(tx => mobileList.innerHTML += createTxHTML(tx));
 
-    // 2. پر کردن جدول رسمی (برای پرینت)
+    // 2. پر کردن جدول رسمی (برای پرینت) با دو تاریخ
     const tableBody = document.getElementById('stmt-table-body');
     tableBody.innerHTML = '';
     
     txs.forEach(tx => {
         const isInc = tx.type === 'income';
-        const dateFormatted = new Date(tx.date).toLocaleDateString(currentLang === 'fa' ? 'fa-IR' : 'en-US');
+        
+        // --- ساخت دو تاریخ برای جدول ---
+        const d = new Date(tx.date);
+        const miladi = d.toISOString().split('T')[0];
+        const shamsi = d.toLocaleDateString('fa-IR');
+        
+        // نمایش: میلادی بالا، شمسی ریز پایین
+        const dateFormatted = `<div style="direction:ltr; line-height:1.2;">${miladi}<br><span style="font-size:9px; color:#555;">${shamsi}</span></div>`;
+        // ------------------------------
         
         const incCol = isInc ? formatMoney(tx.amount) : '-';
         const expCol = !isInc ? formatMoney(tx.amount) : '-';
